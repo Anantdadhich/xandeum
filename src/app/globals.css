@@ -411,3 +411,140 @@ h4 {
   background: var(--card-border);
   margin: var(--spacing-xl) 0;
 }
+
+/* ========================================
+   PAGINATION STYLES
+   ======================================== */
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--foreground-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pagination-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--foreground-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-number:hover:not(.active) {
+  background: var(--card);
+  color: white;
+}
+
+.pagination-number.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* ========================================
+   CHART ANIMATIONS & EFFECTS
+   ======================================== */
+
+/* Subtle pulsing glow for chart lines */
+@keyframes chart-glow-pulse {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(0, 255, 170, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 12px rgba(0, 255, 170, 0.6));
+  }
+}
+
+@keyframes chart-glow-purple {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6));
+  }
+}
+
+.chart-glow-teal {
+  animation: chart-glow-pulse 3s ease-in-out infinite;
+}
+
+.chart-glow-purple {
+  animation: chart-glow-purple 3s ease-in-out infinite;
+}
+
+/* Chart card hover effects */
+.chart-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Smooth bar entry animation */
+@keyframes bar-grow {
+  from {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+}
+
+/* Heat map cell hover */
+.heatmap-cell {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.15);
+  z-index: 10;
+}
+
+/* Chart tooltip styling */
+.chart-tooltip {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 8px !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}

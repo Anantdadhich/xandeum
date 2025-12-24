@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Table,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table'
 import { shortenPubkey } from '@/lib/utils'
 import { ArrowUp, ArrowDown } from 'lucide-react'
+import { Pagination } from '@/components/Pagination'
 
 // Local types to match what the dashboard provides
 interface LegacyPNode {
@@ -29,6 +30,7 @@ interface PNodesTableProps {
   sortColumn: keyof LegacyPNode | null
   sortDirection: 'asc' | 'desc'
   onSort: (column: keyof LegacyPNode) => void
+  itemsPerPage?: number
 }
 
 export function PNodesTable({
@@ -37,8 +39,10 @@ export function PNodesTable({
   sortColumn,
   sortDirection,
   onSort,
+  itemsPerPage = 10,
 }: PNodesTableProps) {
   const router = useRouter()
+  const [currentPage, setCurrentPage] = useState(1)
 
   const filteredAndSortedNodes = useMemo(() => {
     let filtered = pnodes
@@ -68,8 +72,25 @@ export function PNodesTable({
     return filtered
   }, [pnodes, searchQuery, sortColumn, sortDirection])
 
+  // Reset to page 1 when search changes
+  useMemo(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
+
+  // Pagination
+  const totalItems = filteredAndSortedNodes.length
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedNodes = filteredAndSortedNodes.slice(startIndex, startIndex + itemsPerPage)
+
   const handleRowClick = (address: string) => {
     router.push(`/pnodes/${address}`)
+  }
+
+  const renderSortIcon = (column: keyof LegacyPNode) => {
+    if (sortColumn !== column) return null
+    return sortDirection === 'asc'
+      ? <ArrowUp className="w-3 h-3 inline ml-1" />
+      : <ArrowDown className="w-3 h-3 inline ml-1" />
   }
 
   return (
@@ -81,22 +102,22 @@ export function PNodesTable({
               className="pl-6 uppercase text-xs font-bold text-muted-foreground cursor-pointer"
               onClick={() => onSort('pubkey')}
             >
-              NODE ID
+              NODE ID {renderSortIcon('pubkey')}
             </TableHead>
             <TableHead className="uppercase text-xs font-bold text-muted-foreground">IP ADDRESS</TableHead>
             <TableHead
               className="uppercase text-xs font-bold text-muted-foreground cursor-pointer"
               onClick={() => onSort('uptime')}
             >
-              UPTIME
+              UPTIME {renderSortIcon('uptime')}
             </TableHead>
             <TableHead className="uppercase text-xs font-bold text-muted-foreground">STATUS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredAndSortedNodes.map((node) => (
+          {paginatedNodes.map((node, index) => (
             <TableRow
-              key={node.pubkey}
+              key={`${node.address}-${index}`}
               className="cursor-pointer hover:bg-muted/50"
               onClick={() => handleRowClick(node.address)}
             >
@@ -114,7 +135,7 @@ export function PNodesTable({
                 {node.ip}
               </TableCell>
               <TableCell className="text-sm font-bold text-foreground">
-                {typeof node.uptime === 'number' ? `${node.uptime.toFixed(1)}%` : '-'}
+                {typeof node.uptime === 'number' ? `${node.uptime.toFixed(1)} days` : '-'}
               </TableCell>
               <TableCell>
                 <StatusPill status={node.status} />
@@ -123,6 +144,16 @@ export function PNodesTable({
           ))}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
+      <div className="px-6 border-t border-muted">
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          itemsPerPage={itemsPerPage}
+          onPageChange={setCurrentPage}
+        />
+      </div>
 
       {filteredAndSortedNodes.length === 0 && (
         <div className="p-8 text-center text-muted-foreground text-sm">

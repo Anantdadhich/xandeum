@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SidebarProvider } from "@/components/sidebar";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -14,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xandeum pNodes Analytics | Real-time Network Monitoring",
-  description: "Premium analytics platform for monitoring Xandeum Provider Nodes. Real-time metrics, health scores, and network insights.",
-  keywords: ["Xandeum", "pNodes", "Analytics", "Blockchain", "Network Monitoring"],
+  title: "Xandeum Explorer | pNodes Analytics & DeFi",
+  description: "Premium analytics platform for monitoring Xandeum Provider Nodes. Real-time metrics, health scores, trading, staking, and network insights.",
+  keywords: ["Xandeum", "pNodes", "Analytics", "Blockchain", "Network Monitoring", "DeFi", "Staking"],
 };
 
 export default function RootLayout({
@@ -30,8 +31,11 @@ export default function RootLayout({
         className={`${inter.variable} ${geistMono.variable} antialiased bg-gradient-radial`}
         suppressHydrationWarning
       >
-        {children}
+        <SidebarProvider>
+          {children}
+        </SidebarProvider>
       </body>
     </html>
   );
 }
+
