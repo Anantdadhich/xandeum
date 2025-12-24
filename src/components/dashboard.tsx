@@ -1,11 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDashboardStore } from '@/lib/store'
 import { KPICards } from '@/components/kpicards'
 import { SearchFilter } from '@/components/searchfilter'
 import { PNodesTable } from '@/components/pnodestable'
-import { RefreshCw, AlertCircle, Zap } from 'lucide-react'
+import { VersionDistribution } from '@/components/charts/VersionDistribution'
+import { HealthTrend } from '@/components/charts/HealthTrend'
+import NodeMap from '@/components/maps/index'
+import { RefreshCw, AlertCircle, Zap, Globe, BarChart2 } from 'lucide-react'
 import { getNodeHealth } from '@/lib/network-analytics'
 
 const REFRESH_INTERVAL = 5 * 60 * 1000
@@ -25,6 +28,8 @@ export function Dashboard() {
         refreshData,
     } = useDashboardStore()
 
+    const [activeTab, setActiveTab] = useState<'analytics' | 'nodes'>('analytics')
+
     useEffect(() => {
         refreshData()
         const interval = setInterval(() => {
@@ -36,6 +41,13 @@ export function Dashboard() {
     const handleManualRefresh = () => {
         refreshData()
     }
+
+    // Prep data for NodeMap
+    const mapNodes = pnodes.map(n => ({
+        ip: n.address.split(':')[0] || n.address,
+        pubkey: n.pubkey || '',
+        status: getNodeHealth(n.last_seen_timestamp).status
+    }))
 
     return (
         <div className="container-main space-y-8">
@@ -86,16 +98,42 @@ export function Dashboard() {
             {/* KPI Cards */}
             <KPICards metrics={metrics} isLoading={isLoading} />
 
-            {/* pNodes Table Section */}
-            <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
-                        <SearchFilter
-                            value={searchQuery}
-                            onChange={setSearchQuery}
-                            placeholder="Search by pubkey or IP address..."
-                        />
+            {/* Analytics Visualizations */}
+            {metrics && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[400px]">
+                    {/* Version Distribution (Pie) */}
+                    <div className="lg:col-span-1 h-full">
+                        <VersionDistribution data={metrics.versions.distribution} />
                     </div>
+
+                    {/* Node Map (Global) */}
+                    <div className="lg:col-span-2 h-full">
+                        <NodeMap nodes={mapNodes} />
+                    </div>
+                </div>
+            )}
+
+            {/* Secondary Charts Row */}
+            {metrics && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[300px]">
+                    <div className="lg:col-span-3 h-full">
+                        <HealthTrend />
+                    </div>
+                </div>
+            )}
+
+            {/* pNodes Table Section */}
+            <div className="space-y-4 pt-4">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold flex items-center gap-2">
+                        <BarChart2 className="w-5 h-5 text-[var(--accent)]" />
+                        Active Provider Nodes
+                    </h3>
+                    <SearchFilter
+                        value={searchQuery}
+                        onChange={setSearchQuery}
+                        placeholder="Search by pubkey or IP address..."
+                    />
                 </div>
 
                 {isLoading && !pnodes.length ? (
