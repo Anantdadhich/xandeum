@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { formatBytes, type NetworkAnalytics } from '@/lib/network-analytics'
-import { Server, HardDrive, Activity, TrendingUp } from 'lucide-react'
+import { Server, Database, Activity, Globe } from 'lucide-react'
 
 interface KPICardsProps {
   metrics: NetworkAnalytics | null
@@ -10,71 +10,63 @@ interface KPICardsProps {
 }
 
 export function KPICards({ metrics, isLoading }: KPICardsProps) {
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Loading...</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-8 w-24 bg-muted animate-pulse rounded" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    )
-  }
-
-  if (!metrics) {
-    return null
-  }
-
   const kpis = [
     {
       title: 'Total pNodes',
-      value: metrics.totals.total.toLocaleString(),
+      value: metrics ? metrics.totals.total.toLocaleString() : '0',
       icon: Server,
-      description: 'Active provider nodes',
+      bg: 'bg-orange-50',
+      color: 'text-orange-500',
     },
     {
-      title: 'Total Capacity',
-      value: formatBytes(metrics.storage.totalCapacity),
-      icon: HardDrive,
-      description: 'Available storage',
+      title: 'Total Storage',
+      value: metrics ? formatBytes(metrics.storage.totalCapacity) : '0 GB',
+      icon: Database,
+      bg: 'bg-blue-50',
+      color: 'text-blue-500',
     },
     {
-      title: 'Network Utilization',
-      value: `${metrics.storage.utilizationPercentage.toFixed(1)}%`,
-      icon: TrendingUp,
-      description: `${formatBytes(metrics.storage.totalUsed)} used`,
-    },
-    {
-      title: 'Average Uptime',
-      value: `${metrics.performance.averageUptime.toFixed(2)}%`,
+      title: 'Data Stored',
+      value: metrics ? formatBytes(metrics.storage.totalUsed) : '0 GB',
       icon: Activity,
-      description: 'Network reliability',
+      bg: 'bg-pink-50',
+      color: 'text-pink-500',
+    },
+    {
+      title: 'Avg Latency',
+      value: '24ms', // Mock data to match image style
+      icon: Globe,
+      bg: 'bg-cyan-50',
+      color: 'text-cyan-500',
     },
   ]
 
+  if (isLoading) {
+     return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+           {[...Array(4)].map((_,i) => (
+             <div key={i} className="h-32 bg-white rounded-2xl animate-pulse shadow-sm" />
+           ))}
+        </div>
+     )
+  }
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {kpis.map((kpi) => {
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {kpis.map((kpi, index) => {
         const Icon = kpi.icon
         return (
-          <Card key={kpi.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {kpi.title}
-              </CardTitle>
-              <Icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{kpi.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {kpi.description}
-              </p>
+          <Card key={index} className="border-none shadow-sm rounded-2xl bg-white hover:shadow-md transition-shadow cursor-default">
+            <CardContent className="p-6">
+              <div className="mb-4">
+                 <div className={`h-10 w-10 rounded-full ${kpi.bg} flex items-center justify-center`}>
+                    <Icon className={`h-5 w-5 ${kpi.color}`} />
+                 </div>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-400 mb-1">{kpi.title}</p>
+                <h3 className="text-2xl font-bold text-slate-800">{kpi.value}</h3>
+              </div>
             </CardContent>
           </Card>
         )

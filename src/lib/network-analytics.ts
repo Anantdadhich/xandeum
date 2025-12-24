@@ -136,9 +136,11 @@ export function analyzeNetwork(
 
   if (pnodeStats) {
     pnodeStats.forEach((stats) => {
-      totalCapacity += stats.file_size;
-      totalUsed += stats.total_bytes;
-      validStatsCount++;
+      if (stats && typeof stats.file_size === 'number' && typeof stats.total_bytes === 'number') {
+        totalCapacity += stats.file_size;
+        totalUsed += stats.total_bytes;
+        validStatsCount++;
+      }
     });
   }
 
