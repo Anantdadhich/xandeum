@@ -7,6 +7,7 @@ import { SearchFilter } from '@/components/searchfilter'
 import { PNodesTable } from '@/components/pnodestable'
 import { VersionDistribution } from '@/components/charts/VersionDistribution'
 import { HealthTrend } from '@/components/charts/HealthTrend'
+import { NetworkHealthScore } from '@/components/charts/NetworkHealthScore'
 import NodeMap from '@/components/maps/index'
 import { RefreshCw, AlertCircle, Zap, Globe, BarChart2 } from 'lucide-react'
 import { getNodeHealth } from '@/lib/network-analytics'
@@ -59,7 +60,7 @@ export function Dashboard() {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-white">Network Overview</h2>
-                        <p className="text-sm text-[var(--foreground-muted)]">
+                        <p className="text-sm text-muted-foreground">
                             Real-time monitoring dashboard
                         </p>
                     </div>
@@ -67,7 +68,7 @@ export function Dashboard() {
 
                 <div className="flex items-center gap-3">
                     {lastUpdated && (
-                        <span className="text-sm text-[var(--foreground-muted)]">
+                        <span className="text-sm text-muted-foreground">
                             Updated: {lastUpdated.toLocaleTimeString()}
                         </span>
                     )}
@@ -86,11 +87,11 @@ export function Dashboard() {
 
             {/* Error State */}
             {error && (
-                <div className="glass-card p-4 border-[var(--status-offline)] flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-[var(--status-offline)] mt-0.5 flex-shrink-0" />
+                <div className="glass-card p-4 border-destructive flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
                     <div>
-                        <h3 className="font-semibold text-[var(--status-offline)]">Error</h3>
-                        <p className="text-sm text-[var(--foreground-muted)] mt-1">{error}</p>
+                        <h3 className="font-semibold text-destructive">Error</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{error}</p>
                     </div>
                 </div>
             )}
@@ -115,8 +116,11 @@ export function Dashboard() {
 
             {/* Secondary Charts Row */}
             {metrics && (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[300px]">
-                    <div className="lg:col-span-3 h-full">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="lg:col-span-1">
+                        <NetworkHealthScore metrics={{...metrics.health, ...metrics.totals}} />
+                    </div>
+                    <div className="lg:col-span-2">
                         <HealthTrend />
                     </div>
                 </div>
@@ -126,7 +130,7 @@ export function Dashboard() {
             <div className="space-y-4 pt-4">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold flex items-center gap-2">
-                        <BarChart2 className="w-5 h-5 text-[var(--accent)]" />
+                        <BarChart2 className="w-5 h-5 text-accent" />
                         Active Provider Nodes
                     </h3>
                     <SearchFilter
@@ -139,8 +143,8 @@ export function Dashboard() {
                 {isLoading && !pnodes.length ? (
                     <div className="glass-card p-12 text-center">
                         <div className="flex flex-col items-center justify-center gap-3">
-                            <RefreshCw className="h-8 w-8 animate-spin text-[var(--accent)]" />
-                            <p className="text-[var(--foreground-muted)]">Loading pNodes data...</p>
+                            <RefreshCw className="h-8 w-8 animate-spin text-accent" />
+                            <p className="text-muted-foreground">Loading pNodes data...</p>
                         </div>
                     </div>
                 ) : (
@@ -154,6 +158,7 @@ export function Dashboard() {
                             // Uptime from API is in seconds - convert to days for display
                             const uptimeDays = typeof n.uptime === 'number' ? n.uptime / 86400 : undefined
                             return {
+                                address: n.address,
                                 pubkey: n.pubkey || '',
                                 ip,
                                 uptime: uptimeDays,
@@ -176,9 +181,9 @@ export function Dashboard() {
             </div>
 
             {/* Stats Summary */}
-            <div className="text-center text-sm text-[var(--foreground-muted)] py-4">
+            <div className="text-center text-sm text-muted-foreground py-4">
                 <p>
-                    Showing <span className="text-[var(--accent)] font-semibold">{pnodes.length}</span> provider node{pnodes.length !== 1 ? 's' : ''}
+                    Showing <span className="text-accent font-semibold">{pnodes.length}</span> provider node{pnodes.length !== 1 ? 's' : ''}
                 </p>
             </div>
         </div>

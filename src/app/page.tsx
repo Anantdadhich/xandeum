@@ -3,11 +3,6 @@ import { Header } from "@/components/header";
 
 export default function Home() {
   return (
-<<<<<<< HEAD
-    
-     <Dashboard></Dashboard>
-   
-=======
     <div className="min-h-screen">
       <Header />
 
@@ -19,7 +14,7 @@ export default function Home() {
               <span className="text-white">Monitor Your </span>
               <span className="text-gradient">pNodes</span>
             </h1>
-            <p className="text-lg text-[var(--foreground-muted)] max-w-xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
               Real-time analytics and monitoring for Xandeum Provider Nodes.
               Track health, performance, and network metrics.
             </p>
@@ -33,14 +28,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--card-border)] py-8">
+      <footer className="border-t border-border py-8">
         <div className="container-main text-center">
-          <p className="text-sm text-[var(--foreground-muted)]">
+          <p className="text-sm text-muted-foreground">
             Xandeum pNodes Analytics Platform • Auto-refreshes every 5 minutes
           </p>
         </div>
       </footer>
     </div>
->>>>>>> 7d748f6 (fix: remove console logs with keys error and added dashboard)
   );
 }
