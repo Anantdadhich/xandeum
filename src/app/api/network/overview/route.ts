@@ -17,7 +17,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error analyzing network:", error);
+
     return NextResponse.json(
       { success: false, error: "Failed to analyze network" },
       { status: 500 }

@@ -1,7 +1,6 @@
 import { PNodeInfo, PNodeStats, PNodeListResponse } from "@/types/pnode";
 import http from "http";
 
-
 const SEED_PNODES = [
   "173.212.203.145",
   "173.212.220.65",
@@ -37,10 +36,6 @@ export class PNodeClient {
       id: 1,
     };
 
-    console.log(
-      `[PNodeClient] Calling ${method} on http://${ip}:${this.basePort}/rpc` 
-    );
-
     return new Promise((resolve) => {
       const postData = JSON.stringify(payload);
 
@@ -68,27 +63,22 @@ export class PNodeClient {
             const response: JsonRpcResponse<T> = JSON.parse(data);
 
             if (response.error) {
-              console.error(`[PNodeClient] RPC error:`, response.error);
               resolve(null);
               return;
             }
 
-            console.log(`[PNodeClient] ✓ Success from ${ip}`);
             resolve(response.result);
-          } catch (error) {
-            console.error(`[PNodeClient] Failed to parse response:`, error);
+          } catch {
             resolve(null);
           }
         });
       });
 
-      req.on("error", (error) => {
-        console.error(`[PNodeClient] Request error for ${ip}:`, error.message);
+      req.on("error", () => {
         resolve(null);
       });
 
       req.on("timeout", () => {
-        console.error(`[PNodeClient] Request timeout for ${ip}`);
         req.destroy();
         resolve(null);
       });
@@ -98,38 +88,26 @@ export class PNodeClient {
     });
   }
 
-  
   async getAllPNodes(): Promise<PNodeInfo[]> {
-    console.log("[PNodeClient] Starting getAllPNodes...");
-    console.log("[PNodeClient] Querying ALL seed pNodes:", SEED_PNODES);
-
-   
     const results = await Promise.all(
       SEED_PNODES.map(async (seedIp) => {
-        console.log(`[PNodeClient] Fetching from ${seedIp}...`);
         const result = await this.callRpc<PNodeListResponse>(
           seedIp,
           "get-pods"
         );
 
         if (result && result.pods) {
-          console.log(
-            `[PNodeClient] ✓ Got ${result.pods.length} pNodes from ${seedIp}` 
-          );
           return result.pods;
         }
 
-        console.log(`[PNodeClient] ✗ No pods from ${seedIp}`);
         return [];
       })
     );
-
 
     const allPNodes = results.flat();
     const uniquePNodes = new Map<string, PNodeInfo>();
 
     allPNodes.forEach((pnode) => {
-    
       const existing = uniquePNodes.get(pnode.address);
       if (
         !existing ||
@@ -139,27 +117,19 @@ export class PNodeClient {
       }
     });
 
-    const finalList = Array.from(uniquePNodes.values());
-    console.log(`[PNodeClient] ✓ Total unique pNodes: ${finalList.length}`);
-
-    return finalList;
+    return Array.from(uniquePNodes.values());
   }
 
-  
   async getPNodeStats(address: string): Promise<PNodeStats | null> {
-    
     const ip = address.split(":")[0];
-
     return this.callRpc<PNodeStats>(ip, "get-stats");
   }
 
-  
   async getPNodeVersion(address: string): Promise<string | null> {
     const ip = address.split(":")[0];
     const result = await this.callRpc<{ version: string }>(ip, "get-version");
     return result?.version || null;
   }
 }
-
 
 export const pnodeClient = new PNodeClient();

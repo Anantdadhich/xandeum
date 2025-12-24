@@ -22,7 +22,7 @@ export async function GET() {
   try {
     const pnodes = await pnodeClient.getAllPNodes();
 
- 
+
     const enrichedPNodes: EnrichedPNodeInfo[] = await Promise.all(
       pnodes.slice(0, 50).map(async (pnode) => {
         try {
@@ -44,14 +44,14 @@ export async function GET() {
             };
           }
         } catch (error) {
-          console.error(`Failed to get stats for ${pnode.address}:`, error);
+
         }
 
         return pnode;
       })
     );
 
-    
+
     const remainingNodes = pnodes.slice(50);
 
     return NextResponse.json({
@@ -60,7 +60,7 @@ export async function GET() {
       total: pnodes.length,
     });
   } catch (error) {
-    console.error("Error fetching pNodes:", error);
+
     return NextResponse.json(
       { success: false, error: "Failed to fetch pNodes" },
       { status: 500 }

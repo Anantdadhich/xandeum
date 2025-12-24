@@ -11,18 +11,18 @@ interface GeoData {
 
 class GeoCache {
   private cache = new Map<string, { data: GeoData; timestamp: number }>();
-  private readonly CACHE_TTL = 7 * 24 * 60 * 60 * 1000; 
+  private readonly CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 
   async get(ip: string): Promise<GeoData | null> {
     const cached = this.cache.get(ip);
 
     if (cached) {
-      
+
       if (Date.now() - cached.timestamp < this.CACHE_TTL) {
-        console.log(`[GeoCache] Hit for ${ip}`);
+
         return cached.data;
       } else {
-       
+
         this.cache.delete(ip);
       }
     }
@@ -35,7 +35,7 @@ class GeoCache {
       data,
       timestamp: Date.now(),
     });
-    console.log(`[GeoCache] Cached ${ip}`);
+
   }
 
   size(): number {
@@ -47,12 +47,12 @@ export const geoCache = new GeoCache();
 
 
 export async function getGeoLocation(ip: string): Promise<GeoData | null> {
- 
+
   const cached = await geoCache.get(ip);
   if (cached) return cached;
 
   try {
-    console.log(`[GeoCache] Fetching from API for ${ip}`);
+
 
     const response = await fetch(
       `http://ip-api.com/json/${ip}?fields=status,lat,lon,city,country,regionName,isp,org`,
@@ -61,7 +61,7 @@ export async function getGeoLocation(ip: string): Promise<GeoData | null> {
 
     if (!response.ok) {
       if (response.status === 429) {
-        console.error(`[GeoCache] Rate limited for ${ip}`);
+
         return null;
       }
       throw new Error(`HTTP ${response.status}`);
@@ -80,13 +80,13 @@ export async function getGeoLocation(ip: string): Promise<GeoData | null> {
         org: data.org,
       };
 
-      
+
       geoCache.set(ip, geoData);
 
       return geoData;
     }
   } catch (error) {
-    console.error(`[GeoCache] Error fetching ${ip}:`, error);
+
   }
 
   return null;

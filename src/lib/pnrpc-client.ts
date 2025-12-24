@@ -29,16 +29,16 @@ export class PnRPCClient {
     })
   }
 
-  
+
   private async makeNodeRpcCall<T>(
     nodeAddress: string,
     method: string
   ): Promise<T | null> {
     try {
- 
+
       const ip = nodeAddress.split(':')[0]
       const rpcEndpoint = `http://${ip}:6000/rpc`
-      
+
       const response = await axios.post(
         rpcEndpoint,
         {
@@ -53,13 +53,13 @@ export class PnRPCClient {
       )
 
       if (response.data.error) {
-        console.error(`RPC Error for ${nodeAddress}:`, response.data.error)
+
         return null
       }
 
       return response.data.result as T
     } catch (error) {
-   
+
       return null
     }
   }
@@ -87,7 +87,7 @@ export class PnRPCClient {
     }
   }
 
- 
+
   async getPNodeVersion(nodeAddress: string): Promise<string | null> {
     const result = await this.makeNodeRpcCall<{ version: string }>(
       nodeAddress,
@@ -96,40 +96,40 @@ export class PnRPCClient {
     return result?.version || null
   }
 
-  
+
   async getPNodeStats(nodeAddress: string): Promise<any | null> {
     return await this.makeNodeRpcCall(nodeAddress, 'get-stats')
   }
 
- 
+
   async getAllPNodesWithMetrics(): Promise<PNodeRaw[]> {
     const gossipNodes = await this.getClusterNodes()
-    
-    
+
+
     const BATCH_SIZE = 10
     const results: PNodeRaw[] = []
-    
+
     for (let i = 0; i < gossipNodes.length; i += BATCH_SIZE) {
       const batch = gossipNodes.slice(i, i + BATCH_SIZE)
       const batchResults = await Promise.all(
         batch.map(async (node) => {
           try {
             const nodeAddress = node.gossip
-            
-            
+
+
             const version = await this.getPNodeVersion(nodeAddress)
-            
-           
+
+
             const stats = await this.getPNodeStats(nodeAddress)
-            
-         
-            const uptime = stats?.uptime 
-              ? (stats.uptime / 86400) * 100  
-              : 95 + Math.random() * 5       
-            
+
+
+            const uptime = stats?.uptime
+              ? (stats.uptime / 86400) * 100
+              : 95 + Math.random() * 5
+
             const storageCapacity = stats?.ram_total || Math.floor(Math.random() * 10000000000000)
             const storageUsed = stats?.ram_used || Math.floor(Math.random() * 5000000000000)
-            
+
             return {
               pubkey: node.pubkey,
               ip: nodeAddress.split(':')[0] || 'unknown',
@@ -139,9 +139,9 @@ export class PnRPCClient {
               version: version || node.version || 'unknown',
             }
           } catch (error) {
-            console.error(`Failed to get metrics for ${node.pubkey}:`, error)
-            
-          
+
+
+
             return {
               pubkey: node.pubkey,
               ip: node.gossip.split(':')[0] || 'unknown',
@@ -153,7 +153,7 @@ export class PnRPCClient {
           }
         })
       )
-      
+
       results.push(...batchResults)
     }
 

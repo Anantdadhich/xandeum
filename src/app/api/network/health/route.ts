@@ -18,7 +18,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error fetching network health:", error);
+
     return NextResponse.json(
       { success: false, error: "Failed to fetch network health" },
       { status: 500 }
