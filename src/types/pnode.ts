@@ -36,7 +36,7 @@ export interface NetworkAnalytics {
     offline: number;
   };
   health: {
-    score: number; 
+    score: number;
     healthyPercentage: number;
     degradedPercentage: number;
     offlinePercentage: number;
@@ -66,19 +66,20 @@ export interface NetworkAnalytics {
 }
 
 
-export interface EnrichedPNodeInfo extends PNodeInfo, Partial<PNodeStats> {}
+export interface EnrichedPNodeInfo extends PNodeInfo, Partial<PNodeStats> { }
 
 
 export interface DashboardState {
   pnodes: EnrichedPNodeInfo[];
   metrics: NetworkAnalytics | null;
   isLoading: boolean;
+  isLoadingMore: boolean;
   error: string | null;
   lastUpdated: Date | null;
   searchQuery: string;
   sortColumn: keyof EnrichedPNodeInfo | null;
   sortDirection: 'asc' | 'desc';
-  
+
   setPNodes: (pnodes: EnrichedPNodeInfo[]) => void;
   setMetrics: (metrics: NetworkAnalytics) => void;
   setLoading: (loading: boolean) => void;

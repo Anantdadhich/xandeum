@@ -5,10 +5,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#050505]">
       {/* Dashboard Header */}
-      <DashboardHeader
-        breadcrumb={['pNodes', 'Dashboard']}
-        title="Main Dashboard"
-      />
+      <DashboardHeader title="Main Dashboard" />
 
       {/* Dashboard Section */}
       <section className="p-6">

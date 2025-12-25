@@ -115,16 +115,53 @@ export function Dashboard() {
     }))
 
     const renderTabContent = () => {
+        // Chart card skeleton component
+        const ChartSkeleton = ({ cols = 1 }: { cols?: number }) => (
+            <div className={`${cols === 2 ? 'lg:col-span-2' : 'lg:col-span-1'} h-full bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl overflow-hidden`}>
+                <div className="p-5 border-b border-[#1a1a1a]">
+                    <div className="h-4 w-32 bg-[#1a1a1a] rounded animate-pulse mb-2" />
+                    <div className="h-3 w-48 bg-[#1a1a1a] rounded animate-pulse" />
+                </div>
+                <div className="p-5 flex items-center justify-center h-[300px]">
+                    <div className="w-32 h-32 rounded-full border-4 border-[#1a1a1a] border-t-[#252525] animate-spin" />
+                </div>
+            </div>
+        );
+
+        // Table skeleton
+        const TableSkeleton = () => (
+            <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl overflow-hidden">
+                {/* Header row */}
+                <div className="p-4 border-b border-[#1a1a1a] grid grid-cols-4 gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="h-3 bg-[#1a1a1a] rounded animate-pulse" />
+                    ))}
+                </div>
+                {/* Skeleton rows */}
+                {[...Array(5)].map((_, i) => (
+                    <div key={i} className="p-4 border-b border-[#1a1a1a] grid grid-cols-4 gap-4 items-center">
+                        <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-[#1a1a1a] animate-pulse" />
+                            <div className="h-4 w-20 bg-[#1a1a1a] rounded animate-pulse" />
+                        </div>
+                        <div className="h-4 w-24 bg-[#1a1a1a] rounded animate-pulse" />
+                        <div className="h-4 w-16 bg-[#1a1a1a] rounded animate-pulse" />
+                        <div className="h-6 w-16 bg-[#1a1a1a] rounded animate-pulse" />
+                    </div>
+                ))}
+            </div>
+        );
+
         switch (activeTab) {
             case 'overview':
                 return (
                     <>
                         {/* KPI Cards */}
-                        <KPICards metrics={metrics} isLoading={isLoading} />
+                        <KPICards metrics={metrics} isLoading={isLoading && !metrics} />
 
                         {/* Analytics Visualizations */}
-                        {metrics && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[400px]">
+                        {metrics ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
                                 {/* Version Distribution (Pie) */}
                                 <div className="lg:col-span-1 h-full">
                                     <VersionDistribution data={metrics.versions.distribution} />
@@ -135,17 +172,27 @@ export function Dashboard() {
                                     <NodeMap nodes={mapNodes} />
                                 </div>
                             </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
+                                <ChartSkeleton cols={1} />
+                                <ChartSkeleton cols={2} />
+                            </div>
                         )}
 
                         {/* Secondary Charts Row */}
-                        {metrics && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {metrics ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                                 <div className="lg:col-span-1">
                                     <NetworkHealthScore metrics={{ ...metrics.health, ...metrics.totals }} />
                                 </div>
                                 <div className="lg:col-span-2">
                                     <HealthTrend />
                                 </div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                                <ChartSkeleton cols={1} />
+                                <ChartSkeleton cols={2} />
                             </div>
                         )}
 
@@ -155,6 +202,11 @@ export function Dashboard() {
                                 <h3 className="text-lg font-bold flex items-center gap-2">
                                     <BarChart2 className="w-5 h-5 text-accent" />
                                     Active Provider Nodes
+                                    {pnodes.length > 0 && (
+                                        <span className="text-sm font-normal text-[#666]">
+                                            ({pnodes.length} nodes)
+                                        </span>
+                                    )}
                                 </h3>
                                 <SearchFilter
                                     value={searchQuery}
@@ -163,13 +215,8 @@ export function Dashboard() {
                                 />
                             </div>
 
-                            {isLoading && !pnodes.length ? (
-                                <div className="glass-card p-12 text-center">
-                                    <div className="flex flex-col items-center justify-center gap-3">
-                                        <RefreshCw className="h-8 w-8 animate-spin text-accent" />
-                                        <p className="text-muted-foreground">Loading pNodes data...</p>
-                                    </div>
-                                </div>
+                            {!pnodes.length ? (
+                                <TableSkeleton />
                             ) : (
                                 <PNodesTable
                                     pnodes={pnodes.map((n) => {

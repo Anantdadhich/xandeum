@@ -3,13 +3,19 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import {
     LayoutDashboard,
     TrendingUp,
     ArrowRightLeft,
     Coins,
-    FileText
+    FileText,
+    BarChart2,
+    Trophy,
+    List,
+    Map,
+    Star,
+    GitCompare
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -17,6 +23,7 @@ interface SidebarProps {
     onToggle: () => void
 }
 
+// Main pages
 const mainNavItems = [
     {
         title: 'Dashboard',
@@ -32,22 +39,67 @@ const mainNavItems = [
         title: 'Swap',
         href: '/swap',
         icon: ArrowRightLeft,
-        badge: 'New'
     },
     {
         title: 'Stake',
         href: '/stake',
         icon: Coins,
     },
+]
+
+// Dashboard sub-navigation (these were tabs)
+const dashboardSubNavItems = [
     {
-        title: 'Docs',
-        href: '/docs',
-        icon: FileText,
+        title: 'Analytics',
+        href: '/?tab=analytics',
+        tab: 'analytics',
+        icon: BarChart2,
+    },
+    {
+        title: 'Leaderboard',
+        href: '/?tab=leaderboard',
+        tab: 'leaderboard',
+        icon: Trophy,
+    },
+    {
+        title: 'Directory',
+        href: '/?tab=directory',
+        tab: 'directory',
+        icon: List,
+    },
+    {
+        title: 'Map',
+        href: '/?tab=map',
+        tab: 'map',
+        icon: Map,
+    },
+    {
+        title: 'Watchlist',
+        href: '/?tab=watchlist',
+        tab: 'watchlist',
+        icon: Star,
+    },
+    {
+        title: 'Compare',
+        href: '/?tab=compare',
+        tab: 'compare',
+        icon: GitCompare,
     },
 ]
 
+// Docs in separate section
+const docsNavItem = {
+    title: 'Docs',
+    href: '/docs',
+    icon: FileText,
+}
+
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const currentTab = searchParams.get('tab')
+
+    const isOnDashboard = pathname === '/'
 
     return (
         <aside
@@ -74,11 +126,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 py-4 px-3">
+            <nav className="flex-1 py-4 px-3 overflow-y-auto">
+                {/* Main Navigation */}
                 <div className="space-y-1">
                     {mainNavItems.map((item) => {
-                        const isActive = pathname === item.href ||
-                            (item.href !== '/' && pathname.startsWith(item.href))
+                        const isActive = item.href === '/'
+                            ? pathname === '/' && !currentTab
+                            : pathname === item.href
                         const Icon = item.icon
 
                         return (
@@ -100,45 +154,69 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                                         {item.title}
                                     </span>
                                 )}
-                                {isOpen && item.badge && (
-                                    <span className="px-1.5 py-0.5 text-[10px] font-medium bg-[#00FFAA] text-black rounded">
-                                        {item.badge}
-                                    </span>
-                                )}
                             </Link>
                         )
                     })}
                 </div>
+
+                {/* Dashboard Sub-navigation - only show when sidebar is open */}
+                {isOpen && (
+                    <>
+                        <div className="mt-6 mb-2 px-3">
+                            <span className="text-[10px] font-semibold text-[#555] uppercase tracking-wider">
+                                Dashboard Views
+                            </span>
+                        </div>
+                        <div className="space-y-0.5">
+                            {dashboardSubNavItems.map((item) => {
+                                const isActive = isOnDashboard && currentTab === item.tab
+                                const Icon = item.icon
+
+                                return (
+                                    <Link
+                                        key={item.tab}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
+                                                ? 'bg-[#1a1a1a] text-white'
+                                                : 'text-[#666] hover:bg-[#141414] hover:text-white'
+                                            }`}
+                                    >
+                                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#00FFAA]' : ''}`} />
+                                        <span className="text-sm whitespace-nowrap">
+                                            {item.title}
+                                        </span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </>
+                )}
+
+                {/* Docs - separate section */}
+                <div className="mt-6 space-y-1">
+                    {isOpen && (
+                        <div className="mb-2 px-3">
+                            <span className="text-[10px] font-semibold text-[#555] uppercase tracking-wider">
+                                Resources
+                            </span>
+                        </div>
+                    )}
+                    <Link
+                        href={docsNavItem.href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${pathname.startsWith('/docs')
+                                ? 'bg-[#1a1a1a] text-white'
+                                : 'text-[#888] hover:bg-[#141414] hover:text-white'
+                            }`}
+                    >
+                        <FileText className={`w-5 h-5 shrink-0 ${pathname.startsWith('/docs') ? 'text-[#00FFAA]' : ''}`} />
+                        {isOpen && (
+                            <span className="text-sm font-medium whitespace-nowrap">
+                                Docs
+                            </span>
+                        )}
+                    </Link>
+                </div>
             </nav>
         </aside>
-    )
-}
-
-export function SidebarProvider({ children }: { children: React.ReactNode }) {
-    const [isOpen, setIsOpen] = useState(true)
-
-    // Keyboard shortcut handler
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault()
-                setIsOpen(prev => !prev)
-            }
-        }
-
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [])
-
-    return (
-        <div className="flex min-h-screen bg-[#050505]">
-            <Sidebar isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
-            <main
-                className={`flex-1 transition-all duration-300 ${isOpen ? 'ml-[260px]' : 'ml-16'
-                    }`}
-            >
-                {children}
-            </main>
-        </div>
     )
 }

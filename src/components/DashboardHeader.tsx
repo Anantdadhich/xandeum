@@ -1,33 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Search, ChevronRight } from 'lucide-react'
+import { Bell, Search } from 'lucide-react'
 
 interface DashboardHeaderProps {
-    breadcrumb?: string[]
     title: string
 }
 
-export function DashboardHeader({ breadcrumb = ['Dashboard'], title }: DashboardHeaderProps) {
+export function DashboardHeader({ title }: DashboardHeaderProps) {
     const [searchQuery, setSearchQuery] = useState('')
 
     return (
         <header className="h-14 border-b border-[#1a1a1a] bg-[#0a0a0a]/80 backdrop-blur-sm sticky top-0 z-30">
             <div className="h-full px-6 flex items-center justify-between">
-                {/* Left: Breadcrumb & Title */}
+                {/* Left: Title */}
                 <div>
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-1.5 text-xs text-[#666] mb-0.5">
-                        {breadcrumb.map((item, index) => (
-                            <span key={item} className="flex items-center gap-1.5">
-                                {index > 0 && <ChevronRight className="w-3 h-3" />}
-                                <span className={index === breadcrumb.length - 1 ? 'text-[#888]' : ''}>
-                                    {item}
-                                </span>
-                            </span>
-                        ))}
-                    </div>
-                    {/* Title */}
                     <h1 className="text-lg font-semibold text-white">{title}</h1>
                 </div>
 

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { pnodeClient } from "@/lib/pnode-client";
 import type { PNodeInfo, PNodeStats } from "@/types/pnode";
 
@@ -18,11 +18,26 @@ export interface EnrichedPNodeInfo extends PNodeInfo {
   file_size?: number;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const limit = searchParams.get('limit');
+    const limitNum = limit ? parseInt(limit, 10) : undefined;
+
     const pnodes = await pnodeClient.getAllPNodes();
 
+    // If limit is specified, return only that many nodes without enrichment for speed
+    if (limitNum && limitNum > 0) {
+      const limitedNodes = pnodes.slice(0, limitNum);
+      return NextResponse.json({
+        success: true,
+        data: limitedNodes,
+        total: pnodes.length,
+        limited: true,
+      });
+    }
 
+    // Full enrichment for first 50 nodes
     const enrichedPNodes: EnrichedPNodeInfo[] = await Promise.all(
       pnodes.slice(0, 50).map(async (pnode) => {
         try {

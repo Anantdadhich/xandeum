@@ -8,6 +8,23 @@ interface KPICardsProps {
   isLoading: boolean
 }
 
+// Loading skeleton component
+function KPICardSkeleton() {
+  return (
+    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-5">
+      {/* Icon skeleton */}
+      <div className="mb-3">
+        <div className="h-10 w-10 rounded-lg bg-[#1a1a1a] animate-pulse" />
+      </div>
+      {/* Text skeleton */}
+      <div>
+        <div className="h-3 w-20 bg-[#1a1a1a] rounded animate-pulse mb-2" />
+        <div className="h-6 w-16 bg-[#1a1a1a] rounded animate-pulse" />
+      </div>
+    </div>
+  )
+}
+
 export function KPICards({ metrics, isLoading }: KPICardsProps) {
   const kpis = [
     {
@@ -42,16 +59,16 @@ export function KPICards({ metrics, isLoading }: KPICardsProps) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-28 bg-[#141414] rounded-xl animate-pulse border border-[#1a1a1a]" />
+          <KPICardSkeleton key={i} />
         ))}
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
       {kpis.map((kpi, index) => {
         const Icon = kpi.icon
         return (

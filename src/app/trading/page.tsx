@@ -103,10 +103,7 @@ export default function TradingPage() {
 
     return (
         <div className="min-h-screen bg-[#050505]">
-            <DashboardHeader
-                breadcrumb={['Trading', 'XAND']}
-                title="Trade XAND"
-            />
+            <DashboardHeader title="Trade XAND" />
 
             <div className="p-6 space-y-6">
                 {/* Header with Refresh */}
