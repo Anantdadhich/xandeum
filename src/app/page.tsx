@@ -1,5 +1,25 @@
+import { Suspense } from "react";
 import { Dashboard } from "@/components/dashboard";
 import { DashboardHeader } from "@/components/DashboardHeader";
+
+// Loading skeleton for dashboard
+function DashboardLoading() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* KPI Skeletons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="h-28 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl" />
+        ))}
+      </div>
+      {/* Chart Skeletons */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
+        <div className="lg:col-span-1 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl" />
+        <div className="lg:col-span-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -9,7 +29,9 @@ export default function Home() {
 
       {/* Dashboard Section */}
       <section className="p-6">
-        <Dashboard />
+        <Suspense fallback={<DashboardLoading />}>
+          <Dashboard />
+        </Suspense>
       </section>
 
       {/* Footer */}

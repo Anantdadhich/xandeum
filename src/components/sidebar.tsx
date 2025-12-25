@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, createContext, useContext, ReactNode, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useSearchParams } from 'next/navigation'
@@ -140,8 +140,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive
-                                        ? 'bg-[#1a1a1a] text-white'
-                                        : 'text-[#888] hover:bg-[#141414] hover:text-white'
+                                    ? 'bg-[#1a1a1a] text-white'
+                                    : 'text-[#888] hover:bg-[#141414] hover:text-white'
                                     }`}
                             >
                                 {/* Active indicator */}
@@ -177,8 +177,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                                         key={item.tab}
                                         href={item.href}
                                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
-                                                ? 'bg-[#1a1a1a] text-white'
-                                                : 'text-[#666] hover:bg-[#141414] hover:text-white'
+                                            ? 'bg-[#1a1a1a] text-white'
+                                            : 'text-[#666] hover:bg-[#141414] hover:text-white'
                                             }`}
                                     >
                                         <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#00FFAA]' : ''}`} />
@@ -204,8 +204,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     <Link
                         href={docsNavItem.href}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${pathname.startsWith('/docs')
-                                ? 'bg-[#1a1a1a] text-white'
-                                : 'text-[#888] hover:bg-[#141414] hover:text-white'
+                            ? 'bg-[#1a1a1a] text-white'
+                            : 'text-[#888] hover:bg-[#141414] hover:text-white'
                             }`}
                     >
                         <FileText className={`w-5 h-5 shrink-0 ${pathname.startsWith('/docs') ? 'text-[#00FFAA]' : ''}`} />
@@ -219,4 +219,39 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </nav>
         </aside>
     )
+}
+
+// Sidebar Context and Provider
+interface SidebarContextType {
+    isOpen: boolean
+    toggle: () => void
+}
+
+const SidebarContext = createContext<SidebarContextType | undefined>(undefined)
+
+export function SidebarProvider({ children }: { children: ReactNode }) {
+    const [isOpen, setIsOpen] = useState(true)
+
+    const toggle = () => setIsOpen(prev => !prev)
+
+    return (
+        <SidebarContext.Provider value={{ isOpen, toggle }}>
+            <div className="flex min-h-screen">
+                <Suspense fallback={<div className="w-[260px] h-screen bg-[#0a0a0a]" />}>
+                    <Sidebar isOpen={isOpen} onToggle={toggle} />
+                </Suspense>
+                <main className={`flex-1 transition-all duration-300 ${isOpen ? 'ml-[260px]' : 'ml-16'}`}>
+                    {children}
+                </main>
+            </div>
+        </SidebarContext.Provider>
+    )
+}
+
+export function useSidebar() {
+    const context = useContext(SidebarContext)
+    if (!context) {
+        throw new Error('useSidebar must be used within a SidebarProvider')
+    }
+    return context
 }

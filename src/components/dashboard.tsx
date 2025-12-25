@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useDashboardStore } from '@/lib/store'
 import { KPICards } from '@/components/kpicards'
 import { SearchFilter } from '@/components/searchfilter'
@@ -9,7 +10,7 @@ import { VersionDistribution } from '@/components/charts/VersionDistribution'
 import { HealthTrend } from '@/components/charts/HealthTrend'
 import { NetworkHealthScore } from '@/components/charts/NetworkHealthScore'
 import NodeMap from '@/components/maps/index'
-import { DashboardTabs, TabId } from '@/components/tabs/DashboardTabs'
+import { TabId } from '@/components/tabs/DashboardTabs'
 import { LeaderboardTab } from '@/components/tabs/LeaderboardTab'
 import { DirectoryTab } from '@/components/tabs/DirectoryTab'
 import { WatchlistTab } from '@/components/tabs/WatchlistTab'
@@ -38,7 +39,10 @@ export function Dashboard() {
         refreshData,
     } = useDashboardStore()
 
-    const [activeTab, setActiveTab] = useState<TabId>('overview')
+    // Get active tab from URL params
+    const searchParams = useSearchParams()
+    const tabParam = searchParams.get('tab') as TabId | null
+    const activeTab: TabId = tabParam && ['analytics', 'leaderboard', 'directory', 'map', 'watchlist', 'compare'].includes(tabParam) ? tabParam : 'overview'
     const [watchlist, setWatchlist] = useState<string[]>([])
     const [compareList, setCompareList] = useState<string[]>([])
     const [selectedNode, setSelectedNode] = useState<string | null>(null)
@@ -324,8 +328,7 @@ export function Dashboard() {
                 </div>
             </div>
 
-            {/* Tab Navigation */}
-            <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
 
             {/* Error State */}
             {error && (
