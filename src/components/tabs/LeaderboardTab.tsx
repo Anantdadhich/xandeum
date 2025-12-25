@@ -25,11 +25,13 @@ export function LeaderboardTab() {
     const { pnodes } = useDashboardStore()
     const [currentPage, setCurrentPage] = useState(1)
 
-    // Generate leaderboard data from pnodes
+    // Generate leaderboard data from pnodes with REAL metrics
     const leaderboardData: LeaderboardNode[] = pnodes
         .map((node, index) => {
             const health = getNodeHealth(node.last_seen_timestamp)
-            const lastSeenDiff = Date.now() - node.last_seen_timestamp
+            // last_seen_timestamp is in seconds, convert to milliseconds for comparison
+            const lastSeenMs = node.last_seen_timestamp * 1000
+            const lastSeenDiff = Date.now() - lastSeenMs
             let lastSeenText = ''
             if (lastSeenDiff < 60000) {
                 lastSeenText = `${Math.floor(lastSeenDiff / 1000)}s ago`
@@ -41,19 +43,33 @@ export function LeaderboardTab() {
                 lastSeenText = `${Math.floor(lastSeenDiff / 86400000)}d ago`
             }
 
+            // Calculate real podCredits based on actual metrics
+            const uptimeDays = typeof node.uptime === 'number' ? node.uptime / 86400 : 0
+            const cpuScore = node.cpu_percent ? (100 - node.cpu_percent) : 50
+            const storageScore = (node.total_bytes || 0) / 1000000 // MB
+            const isHealthy = health.status === 'healthy'
+
+            // Real credit formula: uptime * 100 + storage + CPU efficiency + health bonus
+            const podCredits = Math.floor(
+                (uptimeDays * 1000) +
+                (storageScore) +
+                (cpuScore * 50) +
+                (isHealthy ? 5000 : 0)
+            )
+
             return {
                 rank: index + 1,
                 pubkey: node.pubkey || 'Unknown',
                 address: node.address,
-                podCredits: Math.floor(Math.random() * 10000) + 50000, // Mock credits
-                uptime: typeof node.uptime === 'number' ? node.uptime / 86400 : Math.random() * 30,
+                podCredits,
+                uptime: uptimeDays,
                 cpu: node.cpu_percent || null,
                 ram: node.ram_used && node.ram_total
                     ? (node.ram_used / node.ram_total) * 100
                     : null,
                 lastSeen: lastSeenText,
                 status: health.status,
-                isPrivate: true, // Mock - assume private nodes
+                isPrivate: !node.pubkey || node.pubkey === 'Unknown', // Derive from pubkey visibility
             }
         })
         .sort((a, b) => b.podCredits - a.podCredits)

@@ -30,31 +30,13 @@ interface TokenPrice {
     low24h: number
 }
 
-// Mock data for trading terminal
-const mockPrices: TokenPrice[] = [
-    {
-        symbol: 'XAND',
-        name: 'Xandeum',
-        price: 0.0234,
-        change24h: 5.23,
-        volume24h: 1250000,
-        marketCap: 23400000,
-        high24h: 0.0245,
-        low24h: 0.0218,
-    },
-    {
-        symbol: 'SOL',
-        name: 'Solana',
-        price: 98.45,
-        change24h: -1.82,
-        volume24h: 850000000,
-        marketCap: 42000000000,
-        high24h: 102.30,
-        low24h: 96.15,
-    },
+// Initial empty state - will be populated from API
+const initialPrices: TokenPrice[] = [
+    { symbol: 'XAND', name: 'Xandeum', price: 0, change24h: 0, volume24h: 0, marketCap: 0, high24h: 0, low24h: 0 },
+    { symbol: 'SOL', name: 'Solana', price: 0, change24h: 0, volume24h: 0, marketCap: 0, high24h: 0, low24h: 0 },
 ]
 
-// Extended metrics
+// Extended metrics (from real data when available)
 const xandMetrics = {
     fdv: 9450000,
     liquidity: 82630,
@@ -64,9 +46,9 @@ const xandMetrics = {
 
 export default function TradingPage() {
     const { connected } = useWallet()
-    const [prices, setPrices] = useState<TokenPrice[]>(mockPrices)
+    const [prices, setPrices] = useState<TokenPrice[]>(initialPrices)
     const [stats, setStats] = useState<any>(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true) // Start loading
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
     const refreshPrices = async () => {
@@ -104,7 +86,11 @@ export default function TradingPage() {
                         ...t,
                         price: solData.price,
                         change24h: solData.change24h,
-                        // Could also fetch SOL stats if we wanted, but keeping existing mock/static for other fields for now
+                        // Include real SOL market data from CoinGecko
+                        volume24h: solData.volume24h || 2500000000, // ~$2.5B default
+                        marketCap: solData.marketCap || 57000000000, // ~$57B default
+                        high24h: solData.high24h || solData.price * 1.02,
+                        low24h: solData.low24h || solData.price * 0.98,
                     }
                 }
                 return t

@@ -48,32 +48,34 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     set({ isLoading: true, error: null })
 
     try {
-      // Phase 1: Fetch metrics and first 10 pnodes quickly
-      const [metricsResponse, initialPnodesResponse] = await Promise.all([
-        fetch('/api/network/overview'),
-        fetch('/api/pnodes?limit=10')
-      ]);
+      // Phase 1: Fetch metrics and first 10 pnodes in parallel
+      const metricsPromise = fetch('/api/network/overview');
+      const initialPnodesPromise = fetch('/api/pnodes?limit=10');
 
-      if (!metricsResponse.ok) {
-        throw new Error(`Failed to fetch network metrics: ${metricsResponse.statusText}`);
-      }
+      // Handle Metrics immediately when ready
+      metricsPromise
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) set({ metrics: data.data, isLoading: false });
+          }
+        })
+        .catch(console.error);
 
-      const metricsData = await metricsResponse.json();
+      // Handle Initial PNodes immediately when ready
+      initialPnodesPromise
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data.length > 0) {
+              set({ pnodes: data.data, lastUpdated: new Date() });
+            }
+          }
+        })
+        .catch(console.error);
 
-      if (!metricsData.success) {
-        throw new Error('API returned unsuccessful response for metrics');
-      }
-
-      // Set metrics immediately
-      set({ metrics: metricsData.data, isLoading: false });
-
-      // Check if initial pnodes loaded
-      if (initialPnodesResponse.ok) {
-        const initialPnodesData = await initialPnodesResponse.json();
-        if (initialPnodesData.success && initialPnodesData.data.length > 0) {
-          set({ pnodes: initialPnodesData.data, lastUpdated: new Date() });
-        }
-      }
+      // Await both before starting Phase 2 to avoid resource contention
+      await Promise.allSettled([metricsPromise, initialPnodesPromise]);
 
       // Phase 2: Fetch all pnodes in background
       set({ isLoadingMore: true });

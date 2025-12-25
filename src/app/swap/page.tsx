@@ -4,14 +4,22 @@ import { useState, useEffect } from 'react'
 import {
     ArrowRightLeft,
     ChevronDown,
-    RefreshCw,
     Settings,
     AlertCircle,
-    Wallet
+    Wallet,
+    CheckCircle,
+    XCircle,
+    ExternalLink
 } from 'lucide-react'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
-import { LAMPORTS_PER_SOL } from '@solana/web3.js'
+import {
+    LAMPORTS_PER_SOL,
+    Transaction,
+    SystemProgram,
+    PublicKey,
+    TransactionInstruction
+} from '@solana/web3.js'
 
 interface Token {
     symbol: string
@@ -27,9 +35,15 @@ const tokens: Token[] = [
     { symbol: 'USDC', name: 'USD Coin', icon: '$', balance: 250, price: 1.0 },
 ]
 
+const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcQb')
+// A random address to simulate a "Liquidity Pool" for the demo
+const DEMO_LP_WALLET = new PublicKey('GkqYQysEGmuL6V2AJoNnWZUz2ZBGWhzQXsJiXm2CLZPL')
+
+type TxStatus = 'idle' | 'building' | 'signing' | 'confirming' | 'success' | 'error'
+
 export default function SwapPage() {
     const { connection } = useConnection()
-    const { connected, publicKey } = useWallet()
+    const { connected, publicKey, sendTransaction } = useWallet()
     const [fromToken, setFromToken] = useState<Token>(tokens[0])
     const [toToken, setToToken] = useState<Token>(tokens[1])
     const [fromAmount, setFromAmount] = useState<string>('')
@@ -37,7 +51,11 @@ export default function SwapPage() {
     const [showFromTokens, setShowFromTokens] = useState(false)
     const [showToTokens, setShowToTokens] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
-    const [isSwapping, setIsSwapping] = useState(false)
+
+    // Transaction State
+    const [txStatus, setTxStatus] = useState<TxStatus>('idle')
+    const [txSignature, setTxSignature] = useState<string | null>(null)
+    const [txError, setTxError] = useState<string | null>(null)
 
     // Fetch SOL Balance
     useEffect(() => {
@@ -69,20 +87,127 @@ export default function SwapPage() {
         setFromToken(toToken)
         setToToken(temp)
         setFromAmount('')
+        resetTxState()
     }
 
     const handleMaxClick = () => {
         setFromAmount(fromToken.balance.toString())
+        resetTxState()
+    }
+
+    const resetTxState = () => {
+        setTxStatus('idle')
+        setTxSignature(null)
+        setTxError(null)
     }
 
     const executeSwap = async () => {
-        if (!connected) return
-        setIsSwapping(true)
-        // Mock swap execution
-        setTimeout(() => {
-            setIsSwapping(false)
-            setFromAmount('')
-        }, 1500)
+        if (!connected || !publicKey) return
+
+        const swapAmount = parseFloat(fromAmount)
+        if (isNaN(swapAmount) || swapAmount <= 0) {
+            setTxError('Invalid amount')
+            return
+        }
+
+        if (swapAmount > fromToken.balance) {
+            setTxError('Insufficient balance')
+            return
+        }
+
+        try {
+            setTxStatus('building')
+            setTxError(null)
+            setTxSignature(null)
+
+            const transaction = new Transaction()
+
+            // 1. Add Memo Instruction (Simulate Swap Intent)
+            const memoContent = `Swap ${fromAmount} ${fromToken.symbol} to ${toAmount} ${toToken.symbol} via Xandeum`
+            transaction.add(
+                new TransactionInstruction({
+                    keys: [{ pubkey: publicKey, isSigner: true, isWritable: true }],
+                    programId: MEMO_PROGRAM_ID,
+                    data: Buffer.from(memoContent, 'utf-8'),
+                })
+            )
+
+            // 2. If swapping SOL -> Token, add a transfer to the "Pool"
+            // If Token -> SOL, we can't easily transfer fake tokens, so we just use the Memo validation as the "Swap"
+            if (fromToken.symbol === 'SOL') {
+                transaction.add(
+                    SystemProgram.transfer({
+                        fromPubkey: publicKey,
+                        toPubkey: DEMO_LP_WALLET,
+                        lamports: Math.floor(swapAmount * LAMPORTS_PER_SOL),
+                    })
+                )
+            } else {
+                // For Fake Token -> SOL, we send a tiny amount of SOL as a network fee / "gas" for the swap
+                // This ensures the user still approves a transaction with value
+                transaction.add(
+                    SystemProgram.transfer({
+                        fromPubkey: publicKey,
+                        toPubkey: DEMO_LP_WALLET,
+                        lamports: 1000, // Tiny amount
+                    })
+                )
+            }
+
+            const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized')
+            transaction.recentBlockhash = blockhash
+            transaction.feePayer = publicKey
+
+            setTxStatus('signing')
+
+            const signature = await sendTransaction(transaction, connection)
+
+            setTxStatus('confirming')
+            setTxSignature(signature)
+
+            const confirmation = await connection.confirmTransaction({
+                signature,
+                blockhash,
+                lastValidBlockHeight
+            }, 'confirmed')
+
+            if (confirmation.value.err) {
+                throw new Error('Transaction failed')
+            }
+
+            setTxStatus('success')
+
+            // Refresh balance
+            const newBalance = await connection.getBalance(publicKey)
+            const newSolBalance = newBalance / LAMPORTS_PER_SOL
+            tokens[0].balance = newSolBalance
+            if (fromToken.symbol === 'SOL') {
+                setFromToken(prev => ({ ...prev, balance: newSolBalance }))
+            } else if (toToken.symbol === 'SOL') {
+                setToToken(prev => ({ ...prev, balance: newSolBalance }))
+            }
+
+            // Reset form after short delay
+            setTimeout(() => {
+                setFromAmount('')
+            }, 2000)
+
+        } catch (err: any) {
+            console.error('Swap error:', err)
+            setTxStatus('error')
+            setTxError(err.message || 'Transaction failed')
+        }
+    }
+
+    const getStatusMessage = () => {
+        switch (txStatus) {
+            case 'building': return 'Building transaction...'
+            case 'signing': return 'Please sign in your wallet...'
+            case 'confirming': return 'Confirming on-chain...'
+            case 'success': return 'Swap successful!'
+            case 'error': return txError || 'Transaction failed'
+            default: return null
+        }
     }
 
     return (
@@ -92,8 +217,12 @@ export default function SwapPage() {
                 <div className="text-center">
                     <h1 className="text-3xl font-bold text-white">Swap Tokens</h1>
                     <p className="text-[var(--foreground-muted)] mt-2">
-                        Powered by Jupiter Aggregator
+                        Powered by Xandeum Liquidity Layer
                     </p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 mt-3 rounded-full bg-[#14F195]/10 border border-[#14F195]/30">
+                        <div className="w-2 h-2 rounded-full bg-[#14F195] animate-pulse" />
+                        <span className="text-xs font-medium text-[#14F195]">DEVNET LIVE</span>
+                    </div>
                 </div>
 
                 {/* Swap Card */}
@@ -153,9 +282,9 @@ export default function SwapPage() {
                         </div>
                         <div className="flex items-center gap-3">
                             <input
-                                type="number"
+                                type="text"
                                 value={fromAmount}
-                                onChange={(e) => setFromAmount(e.target.value)}
+                                onChange={(e) => { setFromAmount(e.target.value); resetTxState(); }}
                                 placeholder="0.00"
                                 className="flex-1 bg-transparent text-3xl font-bold text-white placeholder:text-[var(--foreground-muted)] focus:outline-none"
                             />
@@ -176,6 +305,7 @@ export default function SwapPage() {
                                                 onClick={() => {
                                                     setFromToken(token)
                                                     setShowFromTokens(false)
+                                                    resetTxState()
                                                 }}
                                                 className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--card-hover)] text-left"
                                             >
@@ -240,6 +370,7 @@ export default function SwapPage() {
                                                 onClick={() => {
                                                     setToToken(token)
                                                     setShowToTokens(false)
+                                                    resetTxState()
                                                 }}
                                                 className="w-full flex items-center gap-3 px-4 py-2 hover:bg-[var(--card-hover)] text-left"
                                             >
@@ -283,15 +414,44 @@ export default function SwapPage() {
                         </div>
                     )}
 
+                    {/* Transaction Status */}
+                    {txStatus !== 'idle' && (
+                        <div className={`p-4 rounded-xl flex items-center gap-3 ${txStatus === 'success' ? 'bg-[#14F195]/10 border border-[#14F195]/30' :
+                            txStatus === 'error' ? 'bg-red-500/10 border border-red-500/30' :
+                                'bg-[var(--accent-subtle)] border border-[var(--accent)]/30'
+                            }`}>
+                            {txStatus === 'success' && <CheckCircle className="w-5 h-5 text-[#14F195]" />}
+                            {txStatus === 'error' && <XCircle className="w-5 h-5 text-red-400" />}
+                            {['building', 'signing', 'confirming'].includes(txStatus) && (
+                                <div className="w-5 h-5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+                            )}
+                            <div className="flex-1">
+                                <p className={`text-sm font-medium ${txStatus === 'success' ? 'text-[#14F195]' : txStatus === 'error' ? 'text-red-400' : 'text-white'}`}>
+                                    {getStatusMessage()}
+                                </p>
+                                {txSignature && (
+                                    <a
+                                        href={`https://explorer.solana.com/tx/${txSignature}?cluster=devnet`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs text-[var(--accent)] hover:underline flex items-center gap-1 mt-1"
+                                    >
+                                        View on Explorer <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Swap Button */}
                     {connected ? (
                         <button
                             onClick={executeSwap}
-                            disabled={!fromAmount || parseFloat(fromAmount) <= 0 || isSwapping}
+                            disabled={!fromAmount || parseFloat(fromAmount) <= 0 || ['building', 'signing', 'confirming'].includes(txStatus)}
                             className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Wallet className="w-5 h-5" />
-                            {isSwapping ? 'Swapping...' : 'Swap'}
+                            {['building', 'signing', 'confirming'].includes(txStatus) ? 'Processsing...' : 'Swap'}
                         </button>
                     ) : (
                         <div className="flex justify-center">

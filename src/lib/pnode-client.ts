@@ -37,7 +37,7 @@ interface CacheEntry<T> {
 
 export class PNodeClient {
   private cache: Map<string, CacheEntry<any>> = new Map();
-  private ttl = 30000; // 30 seconds
+  private ttl = 60000; // 60 seconds - increased for stability
   private cachePath: string;
 
   private basePort = 6000;
@@ -53,9 +53,9 @@ export class PNodeClient {
         const fileContent = fs.readFileSync(this.cachePath, "utf-8");
         const parsedCache = JSON.parse(fileContent);
         if (parsedCache && typeof parsedCache === 'object' && !Array.isArray(parsedCache)) {
-            for (const [key, value] of Object.entries(parsedCache)) {
-                this.cache.set(key, value as CacheEntry<any>);
-            }
+          for (const [key, value] of Object.entries(parsedCache)) {
+            this.cache.set(key, value as CacheEntry<any>);
+          }
         }
         console.log("Loaded pNode cache from", this.cachePath);
       }
@@ -128,7 +128,7 @@ export class PNodeClient {
           "Content-Type": "application/json",
           "Content-Length": Buffer.byteLength(postData),
         },
-        timeout: 10000,
+        timeout: 1000, // Fast fail for unresponsive nodes
       };
 
       const req = http.request(options, (res) => {

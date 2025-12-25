@@ -159,25 +159,25 @@ export function Dashboard() {
         switch (activeTab) {
             case 'overview':
                 return (
-                    <>
+                    <div className="flex flex-col gap-10">
                         {/* KPI Cards */}
                         <KPICards metrics={metrics} isLoading={isLoading && !metrics} />
 
                         {/* Analytics Visualizations */}
                         {metrics ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 {/* Version Distribution (Pie) */}
-                                <div className="lg:col-span-1 h-full">
+                                <div className="lg:col-span-1">
                                     <VersionDistribution data={metrics.versions.distribution} />
                                 </div>
 
                                 {/* Node Map (Global) */}
-                                <div className="lg:col-span-2 h-full">
+                                <div className="lg:col-span-2 min-h-[400px]">
                                     <NodeMap nodes={mapNodes} />
                                 </div>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 h-[400px]">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 <ChartSkeleton cols={1} />
                                 <ChartSkeleton cols={2} />
                             </div>
@@ -185,7 +185,7 @@ export function Dashboard() {
 
                         {/* Secondary Charts Row */}
                         {metrics ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 <div className="lg:col-span-1">
                                     <NetworkHealthScore metrics={{ ...metrics.health, ...metrics.totals }} />
                                 </div>
@@ -194,7 +194,7 @@ export function Dashboard() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 <ChartSkeleton cols={1} />
                                 <ChartSkeleton cols={2} />
                             </div>
@@ -250,7 +250,7 @@ export function Dashboard() {
                                 />
                             )}
                         </div>
-                    </>
+                    </div>
                 )
 
             case 'analytics':
@@ -299,7 +299,7 @@ export function Dashboard() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-10">
             {/* Dashboard Controls */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">

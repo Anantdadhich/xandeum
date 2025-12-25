@@ -42,7 +42,7 @@ export default function RootLayout({
       >
         <WalletContextProvider>
           <SidebarProvider>
-            <Header />
+
             {children}
           </SidebarProvider>
         </WalletContextProvider>

@@ -37,9 +37,9 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Full enrichment for first 50 nodes
+    // Full enrichment for first 20 nodes
     const enrichedPNodes: EnrichedPNodeInfo[] = await Promise.all(
-      pnodes.slice(0, 50).map(async (pnode) => {
+      pnodes.slice(0, 20).map(async (pnode) => {
         try {
           const stats = await pnodeClient.getPNodeStats(pnode.address);
 
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     );
 
 
-    const remainingNodes = pnodes.slice(50);
+    const remainingNodes = pnodes.slice(20);
 
     return NextResponse.json({
       success: true,

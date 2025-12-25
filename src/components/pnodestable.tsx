@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { shortenPubkey } from '@/lib/utils'
-import { ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowUp, ArrowDown, Eye } from 'lucide-react'
 import { Pagination } from '@/components/Pagination'
 
 // Local types to match what the dashboard provides
@@ -82,7 +82,7 @@ export function PNodesTable({
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedNodes = filteredAndSortedNodes.slice(startIndex, startIndex + itemsPerPage)
 
-  const handleRowClick = (address: string) => {
+  const handleViewDetails = (address: string) => {
     router.push(`/pnodes/${address}`)
   }
 
@@ -112,14 +112,14 @@ export function PNodesTable({
               UPTIME {renderSortIcon('uptime')}
             </TableHead>
             <TableHead className="uppercase text-xs font-bold text-[#666]">STATUS</TableHead>
+            <TableHead className="uppercase text-xs font-bold text-[#666] text-center">ACTIONS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedNodes.map((node, index) => (
             <TableRow
               key={`${node.address}-${index}`}
-              className="cursor-pointer border-b border-[#1a1a1a] hover:bg-[#141414]"
-              onClick={() => handleRowClick(node.address)}
+              className="border-b border-[#1a1a1a] hover:bg-[#141414] group"
             >
               <TableCell className="pl-6 py-4">
                 <div className="flex items-center gap-3">
@@ -139,6 +139,15 @@ export function PNodesTable({
               </TableCell>
               <TableCell>
                 <StatusPill status={node.status} />
+              </TableCell>
+              <TableCell className="text-center">
+                <button
+                  onClick={() => handleViewDetails(node.address)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--accent-subtle)] text-[var(--accent)] text-xs font-semibold hover:bg-[var(--accent)] hover:text-black transition-all group-hover:scale-105"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  View Details
+                </button>
               </TableCell>
             </TableRow>
           ))}

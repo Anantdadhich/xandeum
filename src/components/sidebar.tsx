@@ -103,22 +103,23 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
     return (
         <aside
-            className={`fixed left-0 top-0 h-screen z-40 transition-all duration-300 ease-in-out ${isOpen ? 'w-[260px]' : 'w-16'
-                } bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col`}
+            className={`fixed left-0 top-0 h-screen z-40 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? 'w-[260px]' : 'w-16'
+                } bg-[#050505]/95 backdrop-blur-xl border-r border-[#ffffff0a] flex flex-col shadow-2xl`}
         >
             {/* Logo Section */}
-            <div className="h-16 flex items-center px-4 border-b border-[#1a1a1a]">
-                <Link href="/" className="flex items-center gap-3">
-                    <Image
-                        src="/icon.webp"
-                        alt="Xandeum"
-                        width={36}
-                        height={36}
-                        className="shrink-0"
-                        priority
-                    />
+            <div className="h-16 flex items-center px-4 border-b border-[#ffffff0a]">
+                <Link href="/" className="flex items-center gap-3 group">
+                    <div className="relative w-9 h-9 transition-transform group-hover:scale-105">
+                        <Image
+                            src="/icon.webp"
+                            alt="Xandeum"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
                     {isOpen && (
-                        <span className="text-lg font-bold text-white whitespace-nowrap">
+                        <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
                             Xandeum
                         </span>
                     )}
@@ -126,7 +127,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 py-4 px-3 overflow-y-auto">
+            <nav className="flex-1 py-6 px-3 overflow-y-auto scrollbar-thin">
                 {/* Main Navigation */}
                 <div className="space-y-1">
                     {mainNavItems.map((item) => {
@@ -139,18 +140,18 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive
-                                    ? 'bg-[#1a1a1a] text-white'
-                                    : 'text-[#888] hover:bg-[#141414] hover:text-white'
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative ${isActive
+                                    ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
+                                    : 'text-[#888] hover:bg-[#ffffff08] hover:text-white'
                                     }`}
                             >
-                                {/* Active indicator */}
+                                {/* Active indicator glow */}
                                 {isActive && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#00FFAA] rounded-r" />
+                                    <div className="absolute inset-0 rounded-xl bg-[var(--accent)]/5 shadow-[0_0_20px_rgba(0,255,170,0.1)]" />
                                 )}
-                                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-[#00FFAA]' : ''}`} />
+                                <Icon className={`w-5 h-5 shrink-0 relative z-10 ${isActive ? 'text-[var(--accent)]' : 'group-hover:scale-110 transition-transform'}`} />
                                 {isOpen && (
-                                    <span className="text-sm font-medium whitespace-nowrap flex-1">
+                                    <span className="text-sm font-medium whitespace-nowrap flex-1 relative z-10">
                                         {item.title}
                                     </span>
                                 )}
@@ -162,12 +163,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 {/* Dashboard Sub-navigation - only show when sidebar is open */}
                 {isOpen && (
                     <>
-                        <div className="mt-6 mb-2 px-3">
-                            <span className="text-[10px] font-semibold text-[#555] uppercase tracking-wider">
+                        <div className="mt-8 mb-3 px-3">
+                            <span className="text-[11px] font-bold text-[#444] uppercase tracking-wider">
                                 Dashboard Views
                             </span>
                         </div>
-                        <div className="space-y-0.5">
+                        <div className="space-y-1">
                             {dashboardSubNavItems.map((item) => {
                                 const isActive = isOnDashboard && currentTab === item.tab
                                 const Icon = item.icon
@@ -177,11 +178,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                                         key={item.tab}
                                         href={item.href}
                                         className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
-                                            ? 'bg-[#1a1a1a] text-white'
-                                            : 'text-[#666] hover:bg-[#141414] hover:text-white'
+                                            ? 'bg-[#ffffff08] text-white'
+                                            : 'text-[#666] hover:bg-[#ffffff05] hover:text-white'
                                             }`}
                                     >
-                                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#00FFAA]' : ''}`} />
+                                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[var(--accent)]' : 'opacity-70'}`} />
                                         <span className="text-sm whitespace-nowrap">
                                             {item.title}
                                         </span>
@@ -193,19 +194,19 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 )}
 
                 {/* Docs - separate section */}
-                <div className="mt-6 space-y-1">
+                <div className="mt-auto pt-6 space-y-1">
                     {isOpen && (
                         <div className="mb-2 px-3">
-                            <span className="text-[10px] font-semibold text-[#555] uppercase tracking-wider">
+                            <span className="text-[11px] font-bold text-[#444] uppercase tracking-wider">
                                 Resources
                             </span>
                         </div>
                     )}
                     <Link
                         href={docsNavItem.href}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${pathname.startsWith('/docs')
-                            ? 'bg-[#1a1a1a] text-white'
-                            : 'text-[#888] hover:bg-[#141414] hover:text-white'
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ${pathname.startsWith('/docs')
+                            ? 'bg-[var(--accent-subtle)] text-[var(--accent)]'
+                            : 'text-[#888] hover:bg-[#ffffff08] hover:text-white'
                             }`}
                     >
                         <FileText className={`w-5 h-5 shrink-0 ${pathname.startsWith('/docs') ? 'text-[#00FFAA]' : ''}`} />
