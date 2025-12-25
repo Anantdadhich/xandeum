@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useDashboardStore } from '@/lib/store'
 import { PremiumLineChart } from '@/components/charts/PremiumLineChart'
 import { PremiumBarChart } from '@/components/charts/PremiumBarChart'
@@ -38,8 +38,33 @@ const CHART_COLORS = {
 export function AnalyticsTab() {
     const { pnodes, metrics } = useDashboardStore()
 
-    // Generate mock historical data for line chart
+    const [healthHistory, setHealthHistory] = useState<any[]>([])
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const res = await fetch('/api/network/health/history?range=24h')
+                const data = await res.json()
+                if (data.data) {
+                    setHealthHistory(data.data)
+                }
+            } catch (e) {
+                console.error('Failed to fetch health history', e)
+            }
+        }
+        fetchHistory()
+    }, [])
+
+    // Generate chart data from API or fall back to mock
     const lineChartData = useMemo(() => {
+        if (healthHistory.length > 0) {
+            return healthHistory.map((item: any) => ({
+                label: new Date(item.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                value: item.score,
+                secondary: Math.max(0, item.score - (Math.random() * 10)) // Mock secondary for now
+            })).reverse()
+        }
+
         const now = new Date()
         return Array.from({ length: 12 }, (_, i) => {
             const date = new Date(now)
@@ -50,7 +75,7 @@ export function AnalyticsTab() {
                 secondary: Math.floor(180 + Math.random() * 40 + i * 2)
             }
         })
-    }, [])
+    }, [healthHistory])
 
     // Generate bar chart data for node activity by region
     const barChartData = useMemo(() => {

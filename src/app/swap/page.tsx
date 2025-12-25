@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     ArrowRightLeft,
     ChevronDown,
@@ -9,6 +9,9 @@ import {
     AlertCircle,
     Wallet
 } from 'lucide-react'
+import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 
 interface Token {
     symbol: string
@@ -19,12 +22,14 @@ interface Token {
 }
 
 const tokens: Token[] = [
-    { symbol: 'SOL', name: 'Solana', icon: '◎', balance: 10.5, price: 98.45 },
+    { symbol: 'SOL', name: 'Solana', icon: '◎', balance: 0, price: 98.45 },
     { symbol: 'XAND', name: 'Xandeum', icon: '✦', balance: 5000, price: 0.0234 },
     { symbol: 'USDC', name: 'USD Coin', icon: '$', balance: 250, price: 1.0 },
 ]
 
 export default function SwapPage() {
+    const { connection } = useConnection()
+    const { connected, publicKey } = useWallet()
     const [fromToken, setFromToken] = useState<Token>(tokens[0])
     const [toToken, setToToken] = useState<Token>(tokens[1])
     const [fromAmount, setFromAmount] = useState<string>('')
@@ -32,6 +37,23 @@ export default function SwapPage() {
     const [showFromTokens, setShowFromTokens] = useState(false)
     const [showToTokens, setShowToTokens] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
+    const [isSwapping, setIsSwapping] = useState(false)
+
+    // Fetch SOL Balance
+    useEffect(() => {
+        if (connected && publicKey) {
+            connection.getBalance(publicKey).then((lamports) => {
+                const solBalance = lamports / LAMPORTS_PER_SOL
+                // Update local tokens constant and state if current token is SOL
+                tokens[0].balance = solBalance
+                if (fromToken.symbol === 'SOL') {
+                    setFromToken(prev => ({ ...prev, balance: solBalance }))
+                } else if (toToken.symbol === 'SOL') {
+                    setToToken(prev => ({ ...prev, balance: solBalance }))
+                }
+            })
+        }
+    }, [connected, publicKey, connection, fromToken.symbol, toToken.symbol])
 
     const toAmount = fromAmount
         ? ((parseFloat(fromAmount) * fromToken.price) / toToken.price).toFixed(
@@ -51,6 +73,16 @@ export default function SwapPage() {
 
     const handleMaxClick = () => {
         setFromAmount(fromToken.balance.toString())
+    }
+
+    const executeSwap = async () => {
+        if (!connected) return
+        setIsSwapping(true)
+        // Mock swap execution
+        setTimeout(() => {
+            setIsSwapping(false)
+            setFromAmount('')
+        }, 1500)
     }
 
     return (
@@ -87,8 +119,8 @@ export default function SwapPage() {
                                         key={s}
                                         onClick={() => setSlippage(s)}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${slippage === s
-                                                ? 'bg-[var(--accent)] text-black'
-                                                : 'bg-[var(--card)] text-white hover:bg-[var(--card-hover)]'
+                                            ? 'bg-[var(--accent)] text-black'
+                                            : 'bg-[var(--card)] text-white hover:bg-[var(--card-hover)]'
                                             }`}
                                     >
                                         {s}%
@@ -252,25 +284,28 @@ export default function SwapPage() {
                     )}
 
                     {/* Swap Button */}
-                    <button
-                        disabled={!fromAmount || parseFloat(fromAmount) <= 0}
-                        className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <Wallet className="w-5 h-5" />
-                        Connect Wallet to Swap
-                    </button>
+                    {connected ? (
+                        <button
+                            onClick={executeSwap}
+                            disabled={!fromAmount || parseFloat(fromAmount) <= 0 || isSwapping}
+                            className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <Wallet className="w-5 h-5" />
+                            {isSwapping ? 'Swapping...' : 'Swap'}
+                        </button>
+                    ) : (
+                        <div className="flex justify-center">
+                            <WalletMultiButton style={{ width: '100%', justifyContent: 'center', backgroundColor: 'var(--accent)', color: 'black', borderRadius: '12px', height: '56px', fontSize: '18px', fontWeight: 'bold' }} />
+                        </div>
+                    )}
                 </div>
 
                 {/* Info Box */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[var(--accent-subtle)] border border-[var(--accent)]/30">
-                    <AlertCircle className="w-5 h-5 text-[var(--accent)] mt-0.5 shrink-0" />
-                    <div className="text-sm text-[var(--foreground-muted)]">
-                        <p className="font-medium text-white mb-1">Demo Mode</p>
-                        <p>
-                            This is a demonstration interface. Connect your wallet and integrate
-                            with Jupiter SDK for real swaps.
-                        </p>
-                    </div>
+                <div className="p-4 rounded-xl bg-[var(--card)] border border-[var(--card-border)] flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-[var(--accent)] flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-[var(--foreground-muted)]">
+                        Verify the token address before swapping. New tokens may have high volatility or be scams.
+                    </p>
                 </div>
             </div>
         </div>

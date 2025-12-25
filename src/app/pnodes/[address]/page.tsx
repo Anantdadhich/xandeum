@@ -108,9 +108,9 @@ export default function PNodeDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-space-dark flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neo-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-[#252525] border-t-[#00FFAA] rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white text-xl">Loading Node Details...</p>
         </div>
       </div>
@@ -119,13 +119,13 @@ export default function PNodeDetailPage() {
 
   if (error || !stats) {
     return (
-      <div className="min-h-screen bg-space-dark flex flex-col">
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
         {/* Header */}
-        <header className="border-b border-space-border bg-space-card/80 backdrop-blur-xl">
+        <header className="border-b border-[#1a1a1a] bg-[#0f0f0f]/80 backdrop-blur-xl">
           <div className="container mx-auto px-4 py-4">
             <button
               onClick={() => router.back()}
-              className="text-neo-teal hover:text-neo-teal/80 text-sm mb-2 inline-flex items-center gap-2 transition-colors cursor-pointer"
+              className="text-[#00FFAA] hover:text-[#00FFAA]/80 text-sm mb-2 inline-flex items-center gap-2 transition-colors cursor-pointer"
             >
               ← Back to Dashboard
             </button>
@@ -133,7 +133,7 @@ export default function PNodeDetailPage() {
               <h1 className="text-2xl font-bold text-white mb-1">
                 Node Details
               </h1>
-              <code className="text-gray-400 text-xs bg-space-dark px-2 py-1 rounded border border-space-border">
+              <code className="text-[#666] text-xs bg-[#0a0a0a] px-2 py-1 rounded border border-[#1a1a1a]">
                 {address}
               </code>
             </div>
@@ -142,29 +142,29 @@ export default function PNodeDetailPage() {
 
         <main className="flex-1 flex items-center justify-center px-4 py-8">
           <div className="max-w-2xl w-full">
-            <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-neo-teal/30">
-              <div className="text-center mb-4">
-                <div className="flex items-center justify-center mb-3">
-                  <div className="w-16 h-16 rounded-full bg-neo-teal/10 border border-neo-teal/30 flex items-center justify-center">
-                    <Server className="w-8 h-8 text-neo-teal" />
-                  </div>
+            <div className="glass-card p-6 border-destructive flex items-start gap-3">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-16 h-16 rounded-full bg-[#1a1a1a] border border-[#252525] flex items-center justify-center">
+                  <Server className="w-8 h-8 text-[#00FFAA]" />
                 </div>
+              </div>
+              <div className="text-center mb-4">
                 <h2 className="text-xl font-bold text-white mb-1">
                   Unable to Fetch Node Details
                 </h2>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[#666] text-sm">
                   We couldn't retrieve statistics for this pNode
                 </p>
               </div>
 
-              <div className="bg-space-dark/50 rounded-lg p-4 border border-space-border mb-4">
+              <div className="bg-[#0f0f0f] rounded-lg p-4 border border-[#1a1a1a] mb-4">
                 <h3 className="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                  <Plug2 className="w-4 h-4 text-neo-teal" />
+                  <Plug2 className="w-4 h-4 text-[#00FFAA]" />
                   Connection Details
                 </h3>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-400 block mb-1">
+                    <span className="text-[#666] block mb-1">
                       Node Address:
                     </span>
                     <span className="text-white font-mono text-xs">
@@ -172,70 +172,70 @@ export default function PNodeDetailPage() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block mb-1">
+                    <span className="text-[#666] block mb-1">
                       IP Address:
                     </span>
                     <span className="text-white font-mono text-xs">{ip}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block mb-1">
+                    <span className="text-[#666] block mb-1">
                       Gossip Port:
                     </span>
                     <span className="text-white font-mono text-xs">{port}</span>
                   </div>
                   <div>
-                    <span className="text-gray-400 block mb-1">RPC Port:</span>
+                    <span className="text-[#666] block mb-1">RPC Port:</span>
                     <span className="text-white font-mono text-xs">6000</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-neo-teal/5 border border-neo-teal/30 rounded-lg p-4">
+              <div className="bg-[#0f0f0f]/50 border border-[#1a1a1a] rounded-lg p-4">
                 <h3 className="text-base font-semibold text-white mb-3">
                   Possible Reasons:
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <span className="text-neo-teal text-lg mt-0.5">•</span>
+                    <span className="text-[#00FFAA] text-lg mt-0.5">•</span>
                     <div>
                       <strong className="text-white">
                         Port 6000 Not Accessible
                       </strong>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-[#666] mt-0.5">
                         The pNode's RPC port (6000) may not be publicly exposed
                         or accessible from this network
                       </p>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-neo-teal text-lg mt-0.5">•</span>
+                    <span className="text-[#00FFAA] text-lg mt-0.5">•</span>
                     <div>
                       <strong className="text-white">Node is Offline</strong>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-[#666] mt-0.5">
                         The pNode may be temporarily offline or experiencing
                         connectivity issues
                       </p>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-neo-teal text-lg mt-0.5">•</span>
+                    <span className="text-[#00FFAA] text-lg mt-0.5">•</span>
                     <div>
                       <strong className="text-white">
                         Firewall Configuration
                       </strong>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-[#666] mt-0.5">
                         Firewall rules or network configuration may be blocking
                         external RPC requests
                       </p>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-neo-teal text-lg mt-0.5">•</span>
+                    <span className="text-[#00FFAA] text-lg mt-0.5">•</span>
                     <div>
                       <strong className="text-white">
                         RPC Server Not Running
                       </strong>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-[#666] mt-0.5">
                         The pNode software may not have the RPC server enabled
                         or running
                       </p>
@@ -247,7 +247,7 @@ export default function PNodeDetailPage() {
               <div className="mt-4 text-center">
                 <button
                   onClick={() => router.back()}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-neo-teal text-space-dark font-bold rounded-lg hover:scale-105 transition-all text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#00FFAA] text-[#0a0a0a] font-bold rounded-lg hover:scale-105 transition-all text-sm"
                 >
                   ← Back to Dashboard
                 </button>
@@ -262,13 +262,13 @@ export default function PNodeDetailPage() {
   const health = getNodeHealth(stats.last_updated);
 
   return (
-    <div className="min-h-screen bg-space-dark">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="border-b border-space-border bg-space-card/80 backdrop-blur-xl sticky top-0 z-10">
+      <header className="border-b border-[#1a1a1a] bg-[#0f0f0f]/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <button
             onClick={() => router.back()}
-            className="text-neo-teal hover:text-neo-teal/80 text-sm mb-3 inline-flex items-center gap-2 transition-colors cursor-pointer"
+            className="text-[#00FFAA] hover:text-[#00FFAA]/80 text-sm mb-3 inline-flex items-center gap-2 transition-colors cursor-pointer"
           >
             ← Back to Dashboard
           </button>
@@ -278,7 +278,7 @@ export default function PNodeDetailPage() {
                 Node Details
               </h1>
               <div className="flex items-center gap-3 flex-wrap">
-                <code className="text-gray-400 text-sm bg-space-dark px-3 py-1 rounded border border-space-border">
+                <code className="text-[#666] text-sm bg-[#0a0a0a] px-3 py-1 rounded border border-[#1a1a1a]">
                   {address}
                 </code>
               </div>
@@ -289,7 +289,7 @@ export default function PNodeDetailPage() {
 
       <main className="container mx-auto px-4 py-8">
         {/* Top Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           <StatCard
             icon={<Server className="w-8 h-8" />}
             label="Storage Used"
@@ -313,15 +313,15 @@ export default function PNodeDetailPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {/* Node Information */}
-          <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all">
+          <div className="glass-card p-6 hover:border-[#00FFAA]/30 transition-all">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                <Monitor className="w-5 h-5 text-neo-teal" />
+                <Monitor className="w-5 h-5 text-[#00FFAA]" />
                 Node Information
               </h2>
-              <span className="text-xs text-neo-teal bg-neo-teal/10 px-3 py-1 rounded-full border border-neo-teal/30">
+              <span className="text-xs text-[#00FFAA] bg-[#00FFAA]/10 px-3 py-1 rounded-full border border-[#00FFAA]/30">
                 REAL-TIME
               </span>
             </div>
@@ -369,13 +369,13 @@ export default function PNodeDetailPage() {
 
           {/* Location */}
           {geoData ? (
-            <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all">
+            <div className="glass-card p-6 hover:border-[#00FFAA]/30 transition-all">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-neo-teal" />
+                  <MapPin className="w-5 h-5 text-[#00FFAA]" />
                   Location
                 </h2>
-                <span className="text-xs text-neo-teal bg-neo-teal/10 px-3 py-1 rounded-full border border-neo-teal/30">
+                <span className="text-xs text-[#00FFAA] bg-[#00FFAA]/10 px-3 py-1 rounded-full border border-[#00FFAA]/30">
                   FROM IP
                 </span>
               </div>
@@ -414,15 +414,15 @@ export default function PNodeDetailPage() {
               </div>
             </div>
           ) : (
-            <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border">
+            <div className="glass-card p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-neo-teal" />
+                  <MapPin className="w-5 h-5 text-[#00FFAA]" />
                   Location
                 </h2>
               </div>
               <div className="text-center py-8">
-                <p className="text-gray-400 text-sm">
+                <p className="text-[#666] text-sm">
                   Location data unavailable
                 </p>
               </div>
@@ -430,23 +430,23 @@ export default function PNodeDetailPage() {
           )}
 
           {/* Storage Stats */}
-          <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all">
+          <div className="glass-card p-6 hover:border-[#00FFAA]/30 transition-all">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <NotebookPen className="w-5 h-5 text-neo-teal" />
+              <NotebookPen className="w-5 h-5 text-[#00FFAA]" />
               Storage Statistics
             </h2>
 
             <div className="space-y-6">
               <div>
-                <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <div className="flex justify-between text-sm text-[#666] mb-2">
                   <span>Storage Utilization</span>
                   <span>
                     {((stats.total_bytes / stats.file_size) * 100).toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-space-dark rounded-full h-3 border border-space-border overflow-hidden">
+                <div className="w-full bg-[#0f0f0f] rounded-full h-3 border border-[#1a1a1a] overflow-hidden">
                   <div
-                    className="h-3 rounded-full bg-neo-teal transition-all duration-500"
+                    className="h-3 rounded-full bg-[#00FFAA] transition-all duration-500"
                     style={{
                       width: `${Math.min(
                         (stats.total_bytes / stats.file_size) * 100,
@@ -458,64 +458,64 @@ export default function PNodeDetailPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-space-dark/50 rounded-lg border border-space-border">
-                  <div className="text-2xl font-bold text-neo-teal">
+                <div className="text-center p-4 bg-[#0f0f0f]/50 rounded-lg border border-[#1a1a1a]">
+                  <div className="text-2xl font-bold text-[#00FFAA]">
                     {formatBytes(stats.total_bytes)}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">Used</div>
+                  <div className="text-xs text-[#666] mt-1">Used</div>
                 </div>
-                <div className="text-center p-4 bg-space-dark/50 rounded-lg border border-space-border">
+                <div className="text-center p-4 bg-[#0f0f0f]/50 rounded-lg border border-[#1a1a1a]">
                   <div
-                    className="text-2xl font-bold text-neo-teal"
+                    className="text-2xl font-bold text-[#00FFAA]"
                     style={{ opacity: 0.6 }}
                   >
                     {formatBytes(stats.file_size)}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">Capacity</div>
+                  <div className="text-xs text-[#666] mt-1">Capacity</div>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Network Activity */}
-          <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all">
+          <div className="glass-card p-6 hover:border-[#00FFAA]/30 transition-all">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-              <Network className="w-5 h-5 text-neo-teal" />
+              <Network className="w-5 h-5 text-[#00FFAA]" />
               Network Activity
             </h2>
 
             <div className="space-y-6">
               <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-space-dark/50 rounded-lg border border-space-border">
-                  <div className="text-3xl font-bold text-neo-teal">
+                <div className="text-center p-4 bg-[#0f0f0f]/50 rounded-lg border border-[#1a1a1a]">
+                  <div className="text-3xl font-bold text-[#00FFAA]">
                     {stats.active_streams}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-[#666] mt-1">
                     Active Streams
                   </div>
                 </div>
-                <div className="text-center p-4 bg-space-dark/50 rounded-lg border border-space-border">
+                <div className="text-center p-4 bg-[#0f0f0f]/50 rounded-lg border border-[#1a1a1a]">
                   <div
-                    className="text-3xl font-bold text-neo-teal"
+                    className="text-3xl font-bold text-[#00FFAA]"
                     style={{ opacity: 0.8 }}
                   >
                     {stats.packets_received}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">RX/s</div>
+                  <div className="text-xs text-[#666] mt-1">RX/s</div>
                 </div>
-                <div className="text-center p-4 bg-space-dark/50 rounded-lg border border-space-border">
+                <div className="text-center p-4 bg-[#0f0f0f]/50 rounded-lg border border-[#1a1a1a]">
                   <div
-                    className="text-3xl font-bold text-neo-teal"
+                    className="text-3xl font-bold text-[#00FFAA]"
                     style={{ opacity: 0.6 }}
                   >
                     {stats.packets_sent}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">TX/s</div>
+                  <div className="text-xs text-[#666] mt-1">TX/s</div>
                 </div>
               </div>
 
-              <div className="bg-space-dark/50 rounded-lg p-4 border border-space-border">
-                <div className="text-sm text-gray-400 mb-2">Last Updated</div>
+              <div className="bg-[#0f0f0f]/50 rounded-lg p-4 border border-[#1a1a1a]">
+                <div className="text-sm text-[#666] mb-2">Last Updated</div>
                 <div className="text-lg font-semibold text-white">
                   {new Date(stats.last_updated * 1000).toLocaleString()}
                 </div>
@@ -525,36 +525,36 @@ export default function PNodeDetailPage() {
         </div>
 
         {/* Performance Metrics */}
-        <div className="mt-6 bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all">
+        <div className="mt-6 glass-card p-6 hover:border-[#00FFAA]/30 transition-all">
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
-            <LaptopMinimalCheck className="w-5 h-5 text-neo-teal" />
+            <LaptopMinimalCheck className="w-5 h-5 text-[#00FFAA]" />
             Performance Metrics
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <div className="flex justify-between text-sm text-[#666] mb-2">
                 <span>CPU Usage</span>
                 <span>{stats.cpu_percent.toFixed(1)}%</span>
               </div>
-              <div className="w-full bg-space-dark rounded-full h-2 border border-space-border overflow-hidden">
+              <div className="w-full bg-[#0f0f0f] rounded-full h-2 border border-[#1a1a1a] overflow-hidden">
                 <div
-                  className="h-2 rounded-full bg-neo-teal transition-all"
+                  className="h-2 rounded-full bg-[#00FFAA] transition-all"
                   style={{ width: `${Math.min(stats.cpu_percent, 100)}%` }}
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <div className="flex justify-between text-sm text-[#666] mb-2">
                 <span>RAM Usage</span>
                 <span>
                   {((stats.ram_used / stats.ram_total) * 100).toFixed(1)}%
                 </span>
               </div>
-              <div className="w-full bg-space-dark rounded-full h-2 border border-space-border overflow-hidden">
+              <div className="w-full bg-[#0f0f0f] rounded-full h-2 border border-[#1a1a1a] overflow-hidden">
                 <div
-                  className="h-2 rounded-full bg-neo-teal transition-all"
+                  className="h-2 rounded-full bg-[#00FFAA] transition-all"
                   style={{
                     width: `${Math.min(
                       (stats.ram_used / stats.ram_total) * 100,
@@ -567,13 +567,13 @@ export default function PNodeDetailPage() {
             </div>
 
             <div>
-              <div className="flex justify-between text-sm text-gray-400 mb-2">
+              <div className="flex justify-between text-sm text-[#666] mb-2">
                 <span>Network Load</span>
                 <span>Active</span>
               </div>
-              <div className="w-full bg-space-dark rounded-full h-2 border border-space-border overflow-hidden">
+              <div className="w-full bg-[#0f0f0f] rounded-full h-2 border border-[#1a1a1a] overflow-hidden">
                 <div
-                  className="h-2 rounded-full bg-neo-teal transition-all animate-pulse"
+                  className="h-2 rounded-full bg-[#00FFAA] transition-all animate-pulse"
                   style={{ width: "65%", opacity: 0.8 }}
                 />
               </div>
@@ -595,13 +595,13 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="bg-space-card/80 backdrop-blur rounded-lg p-6 border border-space-border hover:border-neo-teal/30 transition-all hover:scale-105">
+    <div className="glass-card p-6 hover:scale-105 transition-all">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-white text-md mb-2">{label}</p>
-          <p className="text-3xl font-bold text-neo-teal">{value}</p>
+          <p className="text-3xl font-bold text-[#00FFAA]">{value}</p>
         </div>
-        <div className="text-neo-teal opacity-60">{icon}</div>
+        <div className="text-[#00FFAA] opacity-60">{icon}</div>
       </div>
     </div>
   );
@@ -617,10 +617,10 @@ function InfoRow({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-3 border-b border-space-border last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-[#1a1a1a] last:border-0">
       <div className="flex items-center gap-3">
-        <div className="text-neo-teal">{icon}</div>
-        <span className="text-gray-300">{label}</span>
+        <div className="text-[#00FFAA]">{icon}</div>
+        <span className="text-[#999]">{label}</span>
       </div>
       <span className="font-mono text-sm text-white">{value}</span>
     </div>

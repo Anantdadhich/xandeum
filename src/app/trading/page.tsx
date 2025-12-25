@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { DashboardHeader } from '@/components/DashboardHeader'
 import { TradingViewChart } from '@/components/charts/TradingViewChart'
 import {
@@ -61,24 +63,63 @@ const xandMetrics = {
 }
 
 export default function TradingPage() {
+    const { connected } = useWallet()
     const [prices, setPrices] = useState<TokenPrice[]>(mockPrices)
+    const [stats, setStats] = useState<any>(null)
     const [isLoading, setIsLoading] = useState(false)
     const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
 
-    const refreshPrices = () => {
+    const refreshPrices = async () => {
         setIsLoading(true)
-        setTimeout(() => {
-            setPrices(prev => prev.map(token => ({
-                ...token,
-                price: token.price * (1 + (Math.random() - 0.5) * 0.02),
-                change24h: token.change24h + (Math.random() - 0.5) * 0.5,
-            })))
+        try {
+            // Fetch XAND price
+            const xandRes = await fetch('/api/trading/price?symbol=XAND')
+            const xandData = await xandRes.json()
+
+            // Fetch SOL price
+            const solRes = await fetch('/api/trading/price?symbol=SOL')
+            const solData = await solRes.json()
+
+            // Fetch Stats
+            const statsRes = await fetch('/api/trading/stats')
+            const statsData = await statsRes.json()
+            setStats(statsData)
+
+            // Update prices array
+            setPrices(prev => prev.map(t => {
+                if (t.symbol === 'XAND') {
+                    return {
+                        ...t,
+                        price: xandData.price,
+                        change24h: xandData.change24h,
+                        // Merge with stats if available
+                        volume24h: statsData.volume24h || t.volume24h,
+                        marketCap: statsData.marketCap || t.marketCap,
+                        high24h: statsData.high24h || t.high24h,
+                        low24h: statsData.low24h || t.low24h
+                    }
+                }
+                if (t.symbol === 'SOL') {
+                    return {
+                        ...t,
+                        price: solData.price,
+                        change24h: solData.change24h,
+                        // Could also fetch SOL stats if we wanted, but keeping existing mock/static for other fields for now
+                    }
+                }
+                return t
+            }))
+
             setLastUpdated(new Date())
+        } catch (e) {
+            console.error('Failed to fetch trading data', e)
+        } finally {
             setIsLoading(false)
-        }, 500)
+        }
     }
 
     useEffect(() => {
+        refreshPrices()
         const interval = setInterval(refreshPrices, 30000)
         return () => clearInterval(interval)
     }, [])
@@ -132,69 +173,9 @@ export default function TradingPage() {
                     </div>
                 </div>
 
-                {/* Main Grid - Chart + Swap */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* TradingView Chart */}
-                    <div className="lg:col-span-2">
-                        <TradingViewChart />
-                    </div>
-
-                    {/* Swap Widget */}
-                    <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-5">
-                        <div className="flex items-center justify-between mb-5">
-                            <h3 className="text-base font-bold text-white">Swap Tokens</h3>
-                            <button className="p-1.5 rounded-lg hover:bg-[#1a1a1a] text-[#666] hover:text-white transition-colors">
-                                <ArrowUpDown className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        {/* You Pay */}
-                        <div className="mb-4">
-                            <label className="text-xs text-[#666] mb-2 block">You Pay</label>
-                            <div className="flex items-center gap-3 p-3 rounded-lg bg-[#141414] border border-[#252525]">
-                                <input
-                                    type="text"
-                                    placeholder="0.0"
-                                    className="flex-1 bg-transparent text-xl font-semibold text-white placeholder:text-[#444] focus:outline-none"
-                                />
-                                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#252525] text-sm text-white hover:bg-[#252525]">
-                                    Select
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Swap Icon */}
-                        <div className="flex justify-center my-2">
-                            <button className="p-2 rounded-full bg-[#1a1a1a] border border-[#252525] text-[#666] hover:text-[#00FFAA] hover:border-[#00FFAA]/30 transition-colors">
-                                <ArrowUpDown className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        {/* You Receive */}
-                        <div className="mb-5">
-                            <label className="text-xs text-[#666] mb-2 block">You Receive</label>
-                            <div className="flex items-center gap-3 p-3 rounded-lg bg-[#141414] border border-[#252525]">
-                                <input
-                                    type="text"
-                                    placeholder="0.0"
-                                    className="flex-1 bg-transparent text-xl font-semibold text-white placeholder:text-[#444] focus:outline-none"
-                                    readOnly
-                                />
-                                <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#252525] text-sm text-white hover:bg-[#252525]">
-                                    Select
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Connect Wallet Button */}
-                        <button className="w-full py-3 rounded-lg bg-[#00FFAA] text-black font-semibold text-sm hover:bg-[#00E699] transition-colors">
-                            Connect Wallet
-                        </button>
-
-                        <p className="text-center text-[10px] text-[#666] mt-3">
-                            Powered by <a href="https://jup.ag" target="_blank" rel="noopener noreferrer" className="text-[#00FFAA] hover:underline">Jupiter</a>
-                        </p>
-                    </div>
+                {/* Main Grid - Chart Only */}
+                <div className="w-full">
+                    <TradingViewChart />
                 </div>
 
                 {/* Metrics Row */}

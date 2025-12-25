@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/components/sidebar";
+import { WalletContextProvider } from "@/components/WalletContextProvider";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -26,6 +27,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { Header } from "@/components/header";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,9 +40,12 @@ export default function RootLayout({
         className={`${dmSans.variable} ${geistMono.variable} font-sans antialiased bg-[#050505]`}
         suppressHydrationWarning
       >
-        <SidebarProvider>
-          {children}
-        </SidebarProvider>
+        <WalletContextProvider>
+          <SidebarProvider>
+            <Header />
+            {children}
+          </SidebarProvider>
+        </WalletContextProvider>
       </body>
     </html>
   );

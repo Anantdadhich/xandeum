@@ -110,8 +110,8 @@ export function NodeDetailModal({
                         <button
                             onClick={() => onAddToWatchlist(pubkey)}
                             className={`p-2 rounded-lg transition-colors ${isInWatchlist
-                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                    : 'hover:bg-[var(--accent-subtle)] text-[var(--foreground-muted)] hover:text-yellow-400'
+                                ? 'bg-yellow-500/20 text-yellow-400'
+                                : 'hover:bg-[var(--accent-subtle)] text-[var(--foreground-muted)] hover:text-yellow-400'
                                 }`}
                             title={isInWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
                         >
