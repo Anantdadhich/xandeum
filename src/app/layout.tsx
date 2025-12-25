@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/sidebar";
 import { WalletContextProvider } from "@/components/WalletContextProvider";
 
 const dmSans = DM_Sans({
@@ -17,17 +16,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xandeum Explorer | pNodes Analytics & DeFi",
-  description: "Premium analytics platform for monitoring Xandeum Provider Nodes. Real-time metrics, health scores, trading, staking, and network insights.",
-  keywords: ["Xandeum", "pNodes", "Analytics", "Blockchain", "Network Monitoring", "DeFi", "Staking"],
+  title: "Xandeum | Exabytes for Solana Programs",
+  description: "Xandeum is building a revolutionary decentralized storage solution for Solana. Scalable to exabytes, smart contract-native, with liquid staking rewards. Join the future of blockchain storage.",
+  keywords: ["Xandeum", "Solana", "Decentralized Storage", "pNodes", "Liquid Staking", "xandSOL", "XAND", "Blockchain Storage", "Web3"],
   icons: {
     icon: "/icon.webp",
     shortcut: "/icon.webp",
     apple: "/icon.webp",
   },
+  openGraph: {
+    title: "Xandeum | Exabytes for Solana Programs",
+    description: "Revolutionary decentralized storage solution for Solana. Scalable, secure, and smart contract-native.",
+    url: "https://xandeum.network",
+    siteName: "Xandeum",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Xandeum | Exabytes for Solana Programs",
+    description: "Revolutionary decentralized storage solution for Solana. Scalable, secure, and smart contract-native.",
+  },
 };
-
-import { Header } from "@/components/header";
 
 export default function RootLayout({
   children,
@@ -41,10 +50,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <WalletContextProvider>
-          <SidebarProvider>
-
-            {children}
-          </SidebarProvider>
+          {children}
         </WalletContextProvider>
       </body>
     </html>

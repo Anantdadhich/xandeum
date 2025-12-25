@@ -27,7 +27,7 @@ interface SidebarProps {
 const mainNavItems = [
     {
         title: 'Dashboard',
-        href: '/',
+        href: '/dashboard',
         icon: LayoutDashboard,
     },
     {
@@ -51,37 +51,37 @@ const mainNavItems = [
 const dashboardSubNavItems = [
     {
         title: 'Analytics',
-        href: '/?tab=analytics',
+        href: '/dashboard?tab=analytics',
         tab: 'analytics',
         icon: BarChart2,
     },
     {
         title: 'Leaderboard',
-        href: '/?tab=leaderboard',
+        href: '/dashboard?tab=leaderboard',
         tab: 'leaderboard',
         icon: Trophy,
     },
     {
         title: 'Directory',
-        href: '/?tab=directory',
+        href: '/dashboard?tab=directory',
         tab: 'directory',
         icon: List,
     },
     {
         title: 'Map',
-        href: '/?tab=map',
+        href: '/dashboard?tab=map',
         tab: 'map',
         icon: Map,
     },
     {
         title: 'Watchlist',
-        href: '/?tab=watchlist',
+        href: '/dashboard?tab=watchlist',
         tab: 'watchlist',
         icon: Star,
     },
     {
         title: 'Compare',
-        href: '/?tab=compare',
+        href: '/dashboard?tab=compare',
         tab: 'compare',
         icon: GitCompare,
     },
@@ -99,7 +99,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     const searchParams = useSearchParams()
     const currentTab = searchParams.get('tab')
 
-    const isOnDashboard = pathname === '/'
+    const isOnDashboard = pathname === '/dashboard'
 
     return (
         <aside
@@ -131,8 +131,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 {/* Main Navigation */}
                 <div className="space-y-1">
                     {mainNavItems.map((item) => {
-                        const isActive = item.href === '/'
-                            ? pathname === '/' && !currentTab
+                        const isActive = item.href === '/dashboard'
+                            ? pathname === '/dashboard' && !currentTab
                             : pathname === item.href
                         const Icon = item.icon
 

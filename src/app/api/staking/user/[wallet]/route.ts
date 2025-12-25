@@ -1,8 +1,10 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 
-export async function GET(request: Request, context: { params: Promise<{ wallet: string }> }) {
-    const { wallet } = await context.params
-
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ wallet: string }> }
+) {
+    const { wallet } = await params
 
     const charCode = wallet.charCodeAt(0) || 0
     const stakedBalance = (charCode * 10) + 500
