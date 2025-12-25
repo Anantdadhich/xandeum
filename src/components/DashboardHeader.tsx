@@ -15,7 +15,7 @@ export function DashboardHeader({ title }: DashboardHeaderProps) {
             <div className="h-full px-6 flex items-center justify-between">
                 {/* Left: Title */}
                 <div>
-                    <h1 className="text-lg font-semibold text-white">{title}</h1>
+                    <h1 className="text-xl font-semibold text-white">{title}</h1>
                 </div>
 
                 {/* Right: Search & Notifications */}
