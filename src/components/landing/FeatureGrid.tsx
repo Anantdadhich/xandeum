@@ -1,6 +1,7 @@
 'use client'
 
 import { Database, Zap, DollarSign, Monitor } from 'lucide-react'
+import { ScrollReveal, scrollAnimationStyles } from './ScrollAnimation'
 
 const features = [
     {
@@ -44,9 +45,12 @@ const features = [
 export function FeatureGrid() {
     return (
         <section id="features" className="relative py-24 overflow-hidden">
+            {/* Inject scroll animation styles */}
+            <style dangerouslySetInnerHTML={{ __html: scrollAnimationStyles }} />
+
             <div className="relative z-10 max-w-7xl mx-auto px-6">
                 {/* Section Header - Centered at top */}
-                <div className="text-center mb-16">
+                <ScrollReveal className="text-center mb-16">
                     {/* Small label with dot */}
                     <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.06]">
                         <span className="w-2 h-2 rounded-full bg-[#00FFAA]"></span>
@@ -65,53 +69,57 @@ export function FeatureGrid() {
                     <p className="text-[#777] text-lg leading-relaxed max-w-2xl mx-auto">
                         Unlock limitless possibilities with exabyte-scale storage designed specifically for Solana programs.
                     </p>
-                </div>
+                </ScrollReveal>
 
                 {/* Horizontal Grid - 2x2 on medium, 4 columns on large */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {features.map((feature) => {
+                    {features.map((feature, index) => {
                         const Icon = feature.icon
                         return (
-                            <div
+                            <ScrollReveal
                                 key={feature.title}
-                                className="group relative rounded-3xl overflow-hidden"
+                                delay={index * 150}
                             >
-                                {/* Card background with gradient */}
-                                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient}`}></div>
-
-                                {/* Subtle grid pattern overlay */}
                                 <div
-                                    className="absolute inset-0 opacity-[0.03]"
-                                    style={{
-                                        backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-                                        backgroundSize: '32px 32px',
-                                    }}
-                                ></div>
+                                    className="group relative rounded-3xl overflow-hidden h-full"
+                                >
+                                    {/* Card background with gradient */}
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient}`}></div>
 
-                                {/* Card content */}
-                                <div className="relative p-6 bg-[#0a0a0a]/80 backdrop-blur-sm border border-white/[0.08] rounded-3xl h-full">
-                                    {/* Card header */}
-                                    <div className="flex items-center justify-between mb-5">
-                                        <span className="text-[10px] font-medium tracking-wider text-[#666] uppercase">
-                                            {feature.subtitle}
-                                        </span>
-                                        <span className={`text-[10px] font-medium tracking-wider ${feature.accentColor} uppercase flex items-center gap-1`}>
-                                            {feature.badge}
-                                            <Icon className="w-3 h-3" strokeWidth={2} />
-                                        </span>
+                                    {/* Subtle grid pattern overlay */}
+                                    <div
+                                        className="absolute inset-0 opacity-[0.03]"
+                                        style={{
+                                            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+                                            backgroundSize: '32px 32px',
+                                        }}
+                                    ></div>
+
+                                    {/* Card content */}
+                                    <div className="relative p-6 bg-[#0a0a0a]/80 backdrop-blur-sm border border-white/[0.08] rounded-3xl h-full">
+                                        {/* Card header */}
+                                        <div className="flex items-center justify-between mb-5">
+                                            <span className="text-[10px] font-medium tracking-wider text-[#666] uppercase">
+                                                {feature.subtitle}
+                                            </span>
+                                            <span className={`text-[10px] font-medium tracking-wider ${feature.accentColor} uppercase flex items-center gap-1`}>
+                                                {feature.badge}
+                                                <Icon className="w-3 h-3" strokeWidth={2} />
+                                            </span>
+                                        </div>
+
+                                        {/* Title */}
+                                        <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight">
+                                            {feature.title}
+                                        </h3>
+
+                                        {/* Description */}
+                                        <p className="text-[14px] text-[#888] leading-relaxed">
+                                            {feature.description}
+                                        </p>
                                     </div>
-
-                                    {/* Title */}
-                                    <h3 className="text-xl md:text-2xl font-bold text-white mb-3 tracking-tight">
-                                        {feature.title}
-                                    </h3>
-
-                                    {/* Description */}
-                                    <p className="text-[14px] text-[#888] leading-relaxed">
-                                        {feature.description}
-                                    </p>
                                 </div>
-                            </div>
+                            </ScrollReveal>
                         )
                     })}
                 </div>
