@@ -17,9 +17,9 @@ export function HealthTrend() {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
-                <div className="glass-card p-2 border border-[var(--card-border)] bg-[var(--card)]/95">
-                    <p className="text-sm font-semibold text-[var(--foreground-muted)]">{label}</p>
-                    <p className="text-sm font-bold text-[var(--accent)]">
+                <div className="bg-[#141414] p-3 border border-[#252525] rounded-lg">
+                    <p className="text-xs text-[#888]">{label}</p>
+                    <p className="text-sm font-bold text-[#00FFAA]">
                         Score: {payload[0].value}%
                     </p>
                 </div>
@@ -29,9 +29,9 @@ export function HealthTrend() {
     }
 
     return (
-        <div className="glass-card p-6 h-full flex flex-col">
-            <h3 className="text-lg font-bold mb-4">Network Health Trend</h3>
-            <div className="flex-1 min-h-[300px]">
+        <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-5 h-full flex flex-col">
+            <h3 className="text-base font-bold text-white mb-4">Network Health Trend</h3>
+            <div className="flex-1 min-h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                         data={data}
@@ -43,17 +43,17 @@ export function HealthTrend() {
                                 <stop offset="95%" stopColor="#00FFAA" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" vertical={false} />
                         <XAxis
                             dataKey="time"
                             stroke="#666"
-                            fontSize={12}
+                            fontSize={11}
                             tickLine={false}
                             axisLine={false}
                         />
                         <YAxis
                             stroke="#666"
-                            fontSize={12}
+                            fontSize={11}
                             tickLine={false}
                             axisLine={false}
                             domain={[60, 100]}

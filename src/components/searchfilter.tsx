@@ -1,7 +1,6 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { Input } from './ui/input'
 
 interface SearchFilterProps {
   value: string
@@ -9,20 +8,20 @@ interface SearchFilterProps {
   placeholder?: string
 }
 
-export function SearchFilter({ 
-  value, 
-  onChange, 
-  placeholder = 'Search something...' 
+export function SearchFilter({
+  value,
+  onChange,
+  placeholder = 'Search by pubkey or IP address...'
 }: SearchFilterProps) {
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-      <Input
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#666]" />
+      <input
         type="text"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-10 h-10 w-full bg-slate-50 border-none rounded-xl text-sm focus-visible:ring-1 focus-visible:ring-blue-500 placeholder:text-slate-400"
+        className="pl-10 h-10 w-64 bg-[#141414] border border-[#252525] rounded-lg text-sm text-white focus:border-[#00FFAA]/50 focus:outline-none placeholder:text-[#666] transition-colors"
       />
     </div>
   )

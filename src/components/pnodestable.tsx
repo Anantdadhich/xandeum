@@ -97,44 +97,44 @@ export function PNodesTable({
     <div className="w-full">
       <Table>
         <TableHeader>
-          <TableRow className="border-b border-muted hover:bg-transparent">
+          <TableRow className="border-b border-[#1a1a1a] hover:bg-transparent">
             <TableHead
-              className="pl-6 uppercase text-xs font-bold text-muted-foreground cursor-pointer"
+              className="pl-6 uppercase text-xs font-bold text-[#666] cursor-pointer"
               onClick={() => onSort('pubkey')}
             >
               NODE ID {renderSortIcon('pubkey')}
             </TableHead>
-            <TableHead className="uppercase text-xs font-bold text-muted-foreground">IP ADDRESS</TableHead>
+            <TableHead className="uppercase text-xs font-bold text-[#666]">IP ADDRESS</TableHead>
             <TableHead
-              className="uppercase text-xs font-bold text-muted-foreground cursor-pointer"
+              className="uppercase text-xs font-bold text-[#666] cursor-pointer"
               onClick={() => onSort('uptime')}
             >
               UPTIME {renderSortIcon('uptime')}
             </TableHead>
-            <TableHead className="uppercase text-xs font-bold text-muted-foreground">STATUS</TableHead>
+            <TableHead className="uppercase text-xs font-bold text-[#666]">STATUS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {paginatedNodes.map((node, index) => (
             <TableRow
               key={`${node.address}-${index}`}
-              className="cursor-pointer hover:bg-muted/50"
+              className="cursor-pointer border-b border-[#1a1a1a] hover:bg-[#141414]"
               onClick={() => handleRowClick(node.address)}
             >
               <TableCell className="pl-6 py-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                  <div className="h-8 w-8 rounded-full bg-[#1a1a1a] flex items-center justify-center text-xs font-bold text-[#666]">
                     {node.pubkey.slice(0, 2).toUpperCase()}
                   </div>
-                  <span className="font-semibold text-foreground text-sm">
+                  <span className="font-semibold text-white text-sm">
                     {shortenPubkey(node.pubkey)}
                   </span>
                 </div>
               </TableCell>
-              <TableCell className="text-sm font-medium text-muted-foreground">
+              <TableCell className="text-sm font-medium text-[#888]">
                 {node.ip}
               </TableCell>
-              <TableCell className="text-sm font-bold text-foreground">
+              <TableCell className="text-sm font-bold text-white">
                 {typeof node.uptime === 'number' ? `${node.uptime.toFixed(1)} days` : '-'}
               </TableCell>
               <TableCell>
@@ -146,7 +146,7 @@ export function PNodesTable({
       </Table>
 
       {/* Pagination */}
-      <div className="px-6 border-t border-muted">
+      <div className="px-6 border-t border-[#1a1a1a]">
         <Pagination
           currentPage={currentPage}
           totalItems={totalItems}
@@ -156,7 +156,7 @@ export function PNodesTable({
       </div>
 
       {filteredAndSortedNodes.length === 0 && (
-        <div className="p-8 text-center text-muted-foreground text-sm">
+        <div className="p-8 text-center text-[#666] text-sm">
           No nodes found matching filters.
         </div>
       )}
@@ -166,9 +166,21 @@ export function PNodesTable({
 
 function StatusPill({ status }: { status: string }) {
   if (status === 'healthy') {
-    return <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Active</span>
+    return (
+      <span className="inline-flex items-center rounded-md bg-[#0a2015] px-2.5 py-1 text-xs font-medium text-[#00FFAA] border border-[#00FFAA]/20">
+        Active
+      </span>
+    )
   } else if (status === 'degraded') {
-    return <span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">Degraded</span>
+    return (
+      <span className="inline-flex items-center rounded-md bg-[#201a0a] px-2.5 py-1 text-xs font-medium text-[#FFB800] border border-[#FFB800]/20">
+        Degraded
+      </span>
+    )
   }
-  return <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Offline</span>
+  return (
+    <span className="inline-flex items-center rounded-md bg-[#200a0a] px-2.5 py-1 text-xs font-medium text-[#FF2D55] border border-[#FF2D55]/20">
+      Offline
+    </span>
+  )
 }
