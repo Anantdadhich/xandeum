@@ -1,64 +1,64 @@
 # Xandeum Explorer (XNodes Dashboard)
 
-Xandeum Explorer is a production-ready, high-performance dashboard designed to monitor and interact with the Xandeum Network. Built for the Solana ecosystem, it provides real-time visibility into validator nodes (PNodes), network health analytics, and on-chain financial operations like staking and swapping.
+Welcome to the Xandeum Explorer, a live, production-ready dashboard built to monitor the Xandeum storage network. This tool isn't just a static display—it's a real-time command center for the entire network ecosystem.
 
-##  Live Features
+We built this to give the community a crystal-clear view into the health, performance, and growth of the Xandeum pNode network.
 
-###  Real-Time Analytics & Monitoring
-- **Network Health Trend**: Live 24h health score tracking with automated fail-fast RPC monitoring.
-- **Node Directory**: Searchable directory of all PNodes with instant visibility into software versions and IP addresses.
-- **Advanced Charts**: Visual distribution of software versions, regional node density, and performance metrics (CPU vs. RAM).
-- **Leaderboard**: Real-time ranking based on **podCredits** calculated from uptime, storage capacity, and CPU efficiency.
+## 🌟 Live Features
 
-###  DeFi & Staking (Devnet)
-- **Native Staking**: Create stake accounts and delegate SOL to Xandeum validators directly from the UI.
-- **XAND Swap**: Integrated swap terminal with on-chain memo recording and simulated liquidity pool interactions.
-- **Trading Terminal**: Real-time price tracking for SOL (via CoinGecko) and XAND, including 24h volume and market cap metrics.
+### 📊 Real-Time Network Analytics
+Get a pulse on the network with data that updates live from the blockchain:
+- **Health Trend**: Watch the 24-hour network health score evolve in real-time.
+- **Global Heatmap**: See exactly when and where the network is most active.
+- **Version Distribution**: Instantly spot which software versions nodes are running.
+- **Resource Monitoring**: Track CPU vs. RAM efficiency across the entire decentralized network.
 
-###  Premium UI/UX
-- **Glassmorphism 2.0**: A sleek, modern dark-mode aesthetic with semi-transparent panels and vibrant accents.
-- **Responsive Design**: Optimized for everything from large trading monitors to mobile devices.
-- **Contextual Wallet Integration**: Intelligent wallet connectivity that only appears when needed (Stake/Swap pages).
+### 🌍 Interactive Node Map
+Visualize the physical decentralization of the network. We've integrated a **Live Geo-Map** that plots active pNodes around the globe, giving you a tangible sense of the network's physical footprint.
 
-##  Tech Stack
-- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
-- **Language**: TypeScript
-- **UI & Styling**: React 19, Tailwind CSS, Lucide Icons
-- **Blockchain**: [@solana/web3.js](https://solana-labs.github.io/solana-web3.js/), Solana Wallet Adapter
-- **Charts**: [Recharts](https://recharts.org/)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Data Fetching**: Custom PNode Client with 60s caching and 1s RPC fail-fast optimization.
+### 📋 Smart Node Directory
+More than just a list—it's a power tool for analysis:
+- **Live Search**: Find any node by Public Key or IP address instantly.
+- **Deep Filters**: Drill down by Status (Healthy/Offline) or Software Version.
+- **📥 Export Data**: Need to run your own analysis? One click exports the full node dataset to CSV.
 
-##  Getting Started
+### 🏆 Dynamic Leaderboard
+See who's contributing the most. Our leaderboard tracks the top-performing nodes based on real **podCredits**, calculated from a mix of:
+- Uptime consistency
+- Storage capacity provided
+- CPU efficiency scores
 
-### Prerequisites
-- Node.js 20+
-- npm or yarn
-- A Solana wallet (e.g., Phantom, Solflare) set to **Devnet**.
+### 💰 DeFi Integration (Devnet)
+We've integrated full financial capabilities right into the dashboard:
+- **Native Staking**: Delegate SOL to Xandeum validators directly through the UI.
+- **XAND Swap**: A fully functional swap terminal that records unique "Proof of Swap" memos on-chain.
+- **Live Trading Terminal**: Watch real-time market data for SOL (powered by CoinGecko) and XAND, including price, volume, and market cap.
 
-### Installation
-1. Clone the repository:
+### ℹ️ Ease of Use
+- **"About" Context**: New to Xandeum? Our built-in info modal explains the pNode ecosystem in plain English.
+- **Premium Design**: Built with a sleek "Glassmorphism" aesthetic that looks great on any screen, from mobile to ultra-wide monitors.
+
+## 🚀 Tech Stack
+Built for speed and reliability:
+- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS
+- **Data**: Custom RPC Client with "Fail-Fast" technology (1s timeouts) for snappy performace.
+- **Maps**: Leaflet.js for beautiful, interactive data visualization.
+
+## 🏁 Getting Started
+1. Clone the repo:
    ```bash
    git clone https://github.com/Anantdadhich/xandeum.git
    cd xandeum
    ```
-
 2. Install dependencies:
    ```bash
    npm install
    ```
-
-3. Run the development server:
+3. Run the dev server:
    ```bash
    npm run dev
    ```
+4. Open [http://localhost:3000](http://localhost:3000)
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-##  Network Configuration
-This dashboard is currently configured to run on **Solana Devnet**. Ensure your wallet is switched to Devnet to perform staking or swap transactions.
-
-## Build By 
-- [Anantdadhich](https://github.com/Anantdadhich)
-- [notcodesid](https://github.com/notcodesid)
-
+---
+*Built with ❤️ for the Xandeum Bounty 2025*

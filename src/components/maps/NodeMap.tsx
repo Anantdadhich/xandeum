@@ -42,7 +42,7 @@ export default function NodeMap({ nodes }: NodeMapProps) {
                     // Silent fail
                 }
                 // Small delay to be nice to the API/cache
-                await new Promise(r => setTimeout(r, 100))
+                await new Promise(r => setTimeout(r, 200))
             }
             setLocations(loaded)
         }

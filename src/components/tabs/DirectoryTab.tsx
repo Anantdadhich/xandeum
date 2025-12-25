@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useDashboardStore } from '@/lib/store'
-import { Search, Eye, Star, GitCompare, Server, Cpu, HardDrive } from 'lucide-react'
+import { Search, Eye, Star, GitCompare, Server, Cpu, HardDrive, Download } from 'lucide-react'
 import { getNodeHealth } from '@/lib/network-analytics'
 import { Pagination } from '@/components/Pagination'
 
@@ -62,6 +62,35 @@ export function DirectoryTab({ onViewNode, onAddToWatchlist, onAddToCompare }: D
 
         return matchesSearch && matchesStatus && matchesVersion
     })
+
+    // Export CSV
+    const handleExportCSV = () => {
+        const headers = ['Pubkey', 'Address', 'Version', 'Status', 'Uptime(days)', 'CPU(%)', 'RAM(%)']
+        const csvContent = [
+            headers.join(','),
+            ...filteredData.map(node => [
+                node.pubkey,
+                node.address,
+                node.version,
+                node.status,
+                node.uptime.toFixed(2),
+                node.cpu.toFixed(1),
+                node.ram.toFixed(1)
+            ].join(','))
+        ].join('\n')
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        if (link.download !== undefined) {
+            const url = URL.createObjectURL(blob)
+            link.setAttribute('href', url)
+            link.setAttribute('download', `xandeum_pnodes_${new Date().toISOString().split('T')[0]}.csv`)
+            link.style.visibility = 'hidden'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        }
+    }
 
     // Pagination
     const totalItems = filteredData.length
@@ -143,6 +172,16 @@ export function DirectoryTab({ onViewNode, onAddToWatchlist, onAddToCompare }: D
                             <option key={v} value={v}>{v}</option>
                         ))}
                     </select>
+
+                    {/* Export Button */}
+                    <button
+                        onClick={handleExportCSV}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--card-border)] text-sm text-white hover:bg-[var(--accent-subtle)] hover:text-[var(--accent)] transition-colors"
+                        title="Export filtered list to CSV"
+                    >
+                        <Download className="w-4 h-4" />
+                        <span className="hidden sm:inline">Export</span>
+                    </button>
                 </div>
             </div>
 

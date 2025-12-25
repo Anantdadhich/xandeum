@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
-export async function GET(request: Request, { params }: { params: { wallet: string } }) {
-    const { wallet } = params
+export async function GET(request: Request, context: { params: Promise<{ wallet: string }> }) {
+    const { wallet } = await context.params
 
-    // Mock logic: generate a deterministic balance based on wallet address chars
+
     const charCode = wallet.charCodeAt(0) || 0
     const stakedBalance = (charCode * 10) + 500
 
