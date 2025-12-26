@@ -27,13 +27,16 @@ export function LandingHeader() {
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                    ? 'bg-[#050505]/95 backdrop-blur-xl'
-                    : 'bg-transparent'
+                ? 'bg-[#050505]/95 backdrop-blur-xl'
+                : 'bg-transparent'
                 }`}
         >
             <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2.5">
+                <Link
+                    href="/"
+                    className="flex items-center gap-2.5"
+                >
                     <Image
                         src="/icon.webp"
                         alt="Xandeum"
@@ -59,7 +62,9 @@ export function LandingHeader() {
                 </nav>
 
                 {/* CTA Button */}
-                <div className="hidden md:block">
+                <div
+                    className="hidden md:block"
+                >
                     <Link
                         href="/dashboard"
                         className="px-5 py-2.5 text-[14px] font-medium text-black bg-[#00FFAA] rounded-full hover:bg-[#00E699] transition-colors duration-200"

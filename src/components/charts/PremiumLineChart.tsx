@@ -148,7 +148,7 @@ export function PremiumLineChart({
                             dot={false}
                             activeDot={{ r: 4, fill: primaryColor, stroke: '#000', strokeWidth: 2 }}
                             animationDuration={animated ? 1500 : 0}
-                            style={{ filter: `drop-shadow(0 0 8px ${primaryColor}60)` }}
+                            style={{ filter: `drop-shadow(0 0 10px ${primaryColor}80)` }}
                         />
                     </LineChart>
                 </ResponsiveContainer>

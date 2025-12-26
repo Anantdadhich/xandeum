@@ -24,33 +24,52 @@ export default function NodeMap({ nodes }: NodeMapProps) {
     const [locations, setLocations] = useState<NodeLocation[]>([])
 
     useEffect(() => {
-        // Progressive loading of locations to avoid spamming the API
         const loadLocations = async () => {
-            const activeNodes = nodes.filter(n => n.status !== 'offline').slice(0, 50) // Limit to 50 active nodes for demo to avoid rate limits
-            const loaded: NodeLocation[] = []
+            const activeNodes = nodes.filter(n => n.status !== 'offline')
+            if (activeNodes.length === 0) return
 
-            for (const node of activeNodes) {
-                try {
-                    const res = await fetch(`/api/geolocation?ip=${node.ip}`)
-                    if (res.ok) {
-                        const data = await res.json()
-                        if (data.lat && data.lng) {
-                            loaded.push({ ...data, ip: node.ip })
-                        }
+            const uniqueIps = Array.from(new Set(activeNodes.map(n => n.ip)))
+
+            // Filter out IPs we already have
+            const missingIps = uniqueIps.filter(ip => !locations.some(l => l.ip === ip))
+
+            if (missingIps.length === 0) return
+
+            try {
+                // Send all missing IPs to backend - it handles batching
+                const res = await fetch('/api/geolocation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ips: missingIps })
+                })
+
+                if (res.ok) {
+                    const data = await res.json()
+                    if (Array.isArray(data)) {
+                        setLocations(prev => {
+                            const existing = new Map(prev.map(l => [l.ip, l]))
+                            data.forEach((item: any) => {
+                                if (item.lat && item.lng) {
+                                    existing.set(item.query, { ...item, ip: item.query })
+                                }
+                            })
+                            return Array.from(existing.values())
+                        })
                     }
-                } catch (e) {
-                    // Silent fail
                 }
-                // Small delay to be nice to the API/cache
-                await new Promise(r => setTimeout(r, 200))
+            } catch (e) {
+                console.error("Failed to load map locations", e)
             }
-            setLocations(loaded)
         }
 
-        if (nodes.length > 0) {
+        // Debounce slightly to allow node list to settle
+        const timer = setTimeout(() => {
             loadLocations()
-        }
-    }, [nodes.length]) // Only re-run if node count changes drastically
+        }, 500)
+
+        return () => clearTimeout(timer)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [nodes.length])
 
     return (
         <div className="h-full w-full rounded-xl overflow-hidden glass-card border border-[var(--card-border)] relative z-0">

@@ -3,10 +3,58 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowUpRight } from 'lucide-react'
+import { ScrollReveal, scrollAnimationStyles } from './ScrollAnimation'
+
+// Staggered animation styles
+const animationStyles = `
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+}
+
+.animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+    opacity: 0;
+}
+`
+
+// Helper component for animated words
+function AnimatedWord({ children, delay }: { children: React.ReactNode; delay: number }) {
+    return (
+        <span
+            className="inline-block animate-fade-in-up"
+            style={{ animationDelay: `${delay}ms` }}
+        >
+            {children}
+        </span>
+    )
+}
 
 export function Hero() {
     return (
         <section className="relative min-h-screen flex flex-col items-center overflow-hidden">
+            {/* Inject animation styles */}
+            <style dangerouslySetInnerHTML={{ __html: animationStyles + scrollAnimationStyles }} />
 
             {/* Animated Background */}
             <div className="absolute inset-0 z-0">
@@ -26,7 +74,7 @@ export function Hero() {
 
             {/* Content */}
             <div className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-32">
-                {/* Main Headline - Using DM Sans with weight 400 like Cryptix */}
+                {/* Main Headline - Animated word by word */}
                 <h1
                     className="text-[44px] sm:text-[56px] md:text-[68px] lg:text-[82px] leading-[1.1] tracking-[-0.02em] text-white mb-8"
                     style={{
@@ -34,26 +82,40 @@ export function Hero() {
                         fontWeight: 400
                     }}
                 >
-                    Exabytes for
+                    <AnimatedWord delay={200}>Exabytes</AnimatedWord>{' '}
+                    <AnimatedWord delay={500}>for</AnimatedWord>
                     <br />
-                    Solana Programs
+                    <AnimatedWord delay={800}>Solana</AnimatedWord>{' '}
+                    <AnimatedWord delay={1100}>Programs</AnimatedWord>
                 </h1>
 
-                {/* Subheadline */}
-                <p
-                    className="text-[15px] sm:text-[16px] md:text-[17px] text-[#888] max-w-[520px] mx-auto mb-12 leading-[1.7]"
+                {/* Subheadline - Animated line by line */}
+                <div
+                    className="text-[15px] sm:text-[16px] md:text-[17px] text-[#888] max-w-[600px] mx-auto mb-12 leading-[1.7]"
                     style={{
                         fontFamily: 'var(--font-dm-sans), "DM Sans", system-ui, sans-serif',
                         fontWeight: 400
                     }}
                 >
-                    Xandeum offers a seamless, secure experience for decentralized storage.
-                    <br className="hidden sm:block" />
-                    Scalable to exabytes, smart contract native, and lightning fast.
-                </p>
+                    <p
+                        className="animate-fade-in-up"
+                        style={{ animationDelay: '1500ms' }}
+                    >
+                        Xandeum offers a seamless, secure experience for decentralized storage.
+                    </p>
+                    <p
+                        className="animate-fade-in-up"
+                        style={{ animationDelay: '1800ms' }}
+                    >
+                        Scalable to exabytes, smart contract native, and lightning fast.
+                    </p>
+                </div>
 
-                {/* Single CTA Button */}
-                <div className="mb-16">
+                {/* Single CTA Button - Animated */}
+                <div
+                    className="mb-16 animate-fade-in-up"
+                    style={{ animationDelay: '2200ms' }}
+                >
                     <Link
                         href="/dashboard"
                         className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-medium text-black bg-[#00FFAA] rounded-full hover:bg-[#00E699] hover:shadow-[0_0_40px_rgba(0,255,170,0.35)] transition-all duration-300"
@@ -65,7 +127,7 @@ export function Hero() {
             </div>
 
             {/* Dashboard Preview Image with Glowing Top Border */}
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-20">
+            <ScrollReveal className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-20" delay={2500}>
                 {/* Large diffuse greenish glow ABOVE the dashboard - Cryptix style */}
                 <div
                     className="absolute -top-[160px] left-[0%] right-[0%] h-[280px] pointer-events-none"
@@ -112,7 +174,7 @@ export function Hero() {
                         />
                     </div>
                 </div>
-            </div>
+            </ScrollReveal>
         </section>
     )
 }

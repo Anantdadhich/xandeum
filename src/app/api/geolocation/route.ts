@@ -77,4 +77,85 @@ export async function GET(request: Request) {
   }
 }
 
+// ... existing imports
+// Keep existing GET ...
+
+export async function POST(request: Request) {
+  try {
+    const { ips } = await request.json();
+    if (!Array.isArray(ips) || ips.length === 0) {
+      return NextResponse.json({ error: "IP array required" }, { status: 400 });
+    }
+
+    // Deduplicate IPs
+    const uniqueIps = Array.from(new Set(ips));
+    const results: any[] = [];
+    const missingIps: string[] = [];
+
+    // Check cache first
+    uniqueIps.forEach(ip => {
+      const cached = geoCache.get(ip as string);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        results.push({ query: ip, ...cached.data });
+      } else {
+        missingIps.push(ip as string);
+      }
+    });
+
+    // Fetch missing IPs in batches
+    if (missingIps.length > 0) {
+      // ip-api batch allows up to 100 per request
+      const chunkSize = 100;
+      for (let i = 0; i < missingIps.length; i += chunkSize) {
+        const chunk = missingIps.slice(i, i + chunkSize);
+
+        try {
+          const apiRes = await fetch('http://ip-api.com/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(chunk.map(ip => ({
+              query: ip,
+              fields: "status,lat,lon,city,country,regionName,isp,org,query"
+            })))
+          });
+
+          if (apiRes.ok) {
+            const data = await apiRes.json();
+            if (Array.isArray(data)) {
+              data.forEach((item: any) => {
+                if (item.status === 'success') {
+                  const geoData = {
+                    lat: item.lat,
+                    lng: item.lon,
+                    city: item.city,
+                    country: item.country,
+                    regionName: item.regionName,
+                    isp: item.isp,
+                    org: item.org
+                  };
+                  // Update cache
+                  geoCache.set(item.query, {
+                    data: geoData,
+                    timestamp: Date.now()
+                  });
+                  results.push({ ...geoData, query: item.query });
+                }
+              });
+            }
+          }
+
+          // Rate limit niceness
+          await new Promise(r => setTimeout(r, 1000));
+        } catch (e) {
+          console.error("Batch fetch error", e);
+        }
+      }
+    }
+
+    return NextResponse.json(results);
+  } catch (error) {
+    return NextResponse.json({ error: "Batch processing failed" }, { status: 500 });
+  }
+}
+
 export const revalidate = 604800; 

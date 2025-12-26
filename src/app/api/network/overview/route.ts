@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const pnodes = await pnodeClient.getAllPNodes();
 
-    const statsPromises = pnodes.map(pnode => 
+    const statsPromises = pnodes.map(pnode =>
       pnodeClient.getPNodeStats(pnode.address).then(stats => ({ address: pnode.address, stats }))
     );
     const statsResults = await Promise.all(statsPromises);
@@ -39,4 +39,4 @@ export async function GET() {
   }
 }
 
-export const revalidate = 30; 
+export const revalidate = 10; 
